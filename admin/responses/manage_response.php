@@ -1,6 +1,6 @@
 <?php
 if(isset($_GET['id']) && $_GET['id'] > 0){
-    $qry = $conn->query("SELECT * from `response_list` where id = '{$_GET['id']}' ");
+    $qry = $conn->query("SELECT * from `chat_bot_response_list` where id = '{$_GET['id']}' ");
     if($qry->num_rows > 0){
         foreach($qry->fetch_assoc() as $k => $v){
             $$k=$v;
@@ -31,13 +31,28 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 						</div>
 						<div class="clear-fix mt-3"></div>
 						<div class="row bg-gradient-primary">
+							<div class="col-12 border m-0 px-2 py-1">Entity</div>
+						</div>
+						<div id="keyword-list" class="mb-3">
+							
+							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
+								<div class="col-12 border m-0 px-2 py-1 h-100">
+									<textarea name="entity" cols="30" rows="2" class="form-control form-control-sm rounded-0" required="required" style="resize:none"><?php echo isset($entity) ? $entity : '' ?></textarea>
+								</div>
+								
+							</div>
+							
+						</div>
+				
+						<div class="clear-fix mt-3"></div>
+						<div class="row bg-gradient-primary">
 							<div class="col-11 border m-0 px-2 py-1">Keyword</div>
 							<div class="col-1 border m-0 px-2 py-1">Action</div>
 						</div>
 						<div id="keyword-list" class="mb-3">
 							<?php if(isset($id)): ?>
 							<?php  
-							$kw_qry = $conn->query("SELECT * FROM `keyword_list` where response_id = '{$id}'");
+							$kw_qry = $conn->query("SELECT * FROM `chat_bot_keyword_list` where response_id = '{$id}'");
 							while($row = $kw_qry->fetch_assoc()):	
 							?>
 							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
@@ -75,7 +90,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 						<div id="suggestion-list" class="mb-3">
 							<?php if(isset($id)): ?>
 							<?php  
-							$sg_qry = $conn->query("SELECT * FROM `suggestion_list` where response_id = '{$id}'");
+							$sg_qry = $conn->query("SELECT * FROM `chat_bot_suggestion_list` where response_id = '{$id}'");
 							while($row = $sg_qry->fetch_assoc()):	
 							?>
 							<div class="row bg-gradient-light align-items-center sg-item" style="height:4.5em">

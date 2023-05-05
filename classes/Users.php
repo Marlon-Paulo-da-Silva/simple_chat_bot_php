@@ -24,7 +24,7 @@ Class Users extends DBConnection {
 			}
 		}
 		if(empty($id)){
-			$qry = $this->conn->query("INSERT INTO users set {$data}");
+			$qry = $this->conn->query("INSERT INTO chat_bot_users set {$data}");
 			if($qry){
 				$id=$this->conn->insert_id;
 				$this->settings->set_flashdata('success','User Details successfully saved.');
@@ -117,7 +117,7 @@ Class Users extends DBConnection {
 	}
 	public function delete_users(){
 		extract($_POST);
-		$qry = $this->conn->query("DELETE FROM users where id = $id");
+		$qry = $this->conn->query("DELETE from chat_bot_users where id = $id");
 		if($qry){
 			$this->settings->set_flashdata('success','User Details successfully deleted.');
 			if(is_file(base_app."uploads/avatars/$id.png"))

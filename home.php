@@ -5,7 +5,7 @@
         flex-direction: column-reverse;
     }
     #suggestion-list:not(:empty):before {
-        content: 'Suggestions';
+        content: 'Sugestões';
         width: 100%;
         display: block;
         color: #ababab;
@@ -56,7 +56,7 @@
             </div>
             <div class="d-flex w-100 align-items-center">
                 <div class="col-auto flex-shrink-1 flex-grow-1">
-                    <textarea name="keyword" id="keyword" cols="30" class="form-control form-control-sm rounded-0" placeholder="Write your query here" rows="2"></textarea>
+                    <textarea name="keyword" id="keyword" cols="30" class="form-control form-control-sm rounded-0" placeholder="Escreva sua mensagem" rows="2"></textarea>
                 </div>
                 <div class="col-auto">
                     <button class="btn btn-outline-primary border-0 rounded-0" type="button" id="submit"><i class="fa fa-paper-plane"></i></button>
@@ -108,6 +108,7 @@
                 alert("An errror occurred while fetching a response")
             },
             success:function(resp){
+                console.log(resp)
                 if(resp.status = 'success'){
                     item.find('.msg-field').html(resp.response)
                     $('#suggestion-list').after(item)
@@ -132,7 +133,7 @@
                 }
             }
         })
-    }
+    } 
     $(function(){
         $('#keyword').keypress(function(e){
             if(e.which == 13 && e.shiftKey == false){

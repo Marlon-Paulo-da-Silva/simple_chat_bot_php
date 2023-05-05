@@ -48,7 +48,7 @@ Class Master extends DBConnection {
 		$kw_arr=[];
 		foreach($keyword as $k => $v){
 			$v  = trim($this->conn->real_escape_string($v));
-			$check = $this->conn->query("SELECT keyword FROM `keyword_list` where keyword = '{$v}'".(!empty($id) ? " and response_id != '{$id}' " : ""))->num_rows;
+			$check = $this->conn->query("SELECT keyword FROM `chat_bot_keyword_list` where keyword = '{$v}'".(!empty($id) ? " and response_id != '{$id}' " : ""))->num_rows;
 			if($check > 0){
 				$resp['status'] = 'failed';
 				$resp['msg'] = 'Keyword already taken. This might complicate for fetching a response.';
@@ -77,17 +77,17 @@ Class Master extends DBConnection {
 				$data2 .= "('{$rid}', '{$kw}')";
 			}
 			$sql2 = "INSERT INTO `keyword_list` (`response_id`, `keyword`) VALUES {$data2}";
-			$this->conn->query("DELETE FROM `keyword_list` where response_id = '{$rid}'");
+			$this->conn->query("DELETE FROM `chat_bot_keyword_list` where response_id = '{$rid}'");
 			$save2 = $this->conn->query($sql2);
 			if(!$save2){
 				if(empty($id))
-				$this->conn->query("DELETE FROM `keyword_list` where response_id = '{$rid}'");
+				$this->conn->query("DELETE FROM `chat_bot_keyword_list` where response_id = '{$rid}'");
 				$resp['status'] = 'failed';
 				$resp['msg'] = $this->conn->error;
 				$resp['sql'] = $sql2;
 			}
 			$data3="";
-			$this->conn->query("DELETE FROM `suggestion_list` where response_id = '{$rid}'");
+			$this->conn->query("DELETE FROM `chat_bot_suggestion_list` where response_id = '{$rid}'");
 			foreach($suggestion as $sg){
 				if(empty($sg))
 				continue;
@@ -100,7 +100,7 @@ Class Master extends DBConnection {
 				$save3 = $this->conn->query($sql3);
 				if(!$save3){
 					if(empty($id))
-					$this->conn->query("DELETE FROM `keyword_list` where response_id = '{$rid}'");
+					$this->conn->query("DELETE FROM `chat_bot_keyword_list` where response_id = '{$rid}'");
 					$resp['status'] = 'failed';
 					$resp['msg'] = $this->conn->error;
 					$resp['sql'] = $sql3;
@@ -116,7 +116,7 @@ Class Master extends DBConnection {
 	}
 	function delete_response(){
 		extract($_POST);
-		$del = $this->conn->query("DELETE FROM `response_list` where id = '{$id}'");
+		$del = $this->conn->query("DELETE FROM `chat_bot_response_list` where id = '{$id}'");
 		if($del){
 			$resp['status'] = 'success';
 			$this->settings->set_flashdata('success'," Response successfully deleted.");
@@ -129,7 +129,69 @@ Class Master extends DBConnection {
 	}
 	function fetch_response(){
 		extract($_POST);
-		$sql = "SELECT * FROM `response_list` where id in (SELECT response_id FROM `keyword_list` where `keyword` = '{$kw}')";
+
+		$token = 'RSFVNKM4SDC67NDVPTM7VOAEK576BOXQ';
+
+		// /*call another API*/
+		// $curl = curl_init();
+		// curl_setopt_array($curl, array(
+		// CURLOPT_URL => "https://api.wit.ai/message?v=20230505&q=$kw",
+		// CURLOPT_RETURNTRANSFER => true,
+		// CURLOPT_ENCODING => "",
+		// CURLOPT_MAXREDIRS => 10,
+		// CURLOPT_TIMEOUT => 30,
+		// CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		// CURLOPT_CUSTOMREQUEST => "GET",
+		// CURLOPT_HTTPHEADER => array(
+		// 		"authorization: Bearer $token"
+		// 	),
+		// ));
+
+		// 	$response = curl_exec($curl);
+		// 	$err = curl_error($curl);
+
+
+		$context = stream_context_create([
+				'http' => [
+						'method' => 'GET',
+						'header' => [
+								'Content-Type: application/json',
+								"authorization: Bearer $token"
+						]
+				]
+		]);
+
+		$query = array(
+			'q' => $kw
+		);
+		$url = 'https://api.wit.ai/message?v=20230505&' . http_build_query($query,'',null,PHP_QUERY_RFC3986);
+	
+		$resultado = file_get_contents($url, false, $context);
+
+		$resultado = json_decode($resultado, true);
+
+		// return json_encode($resultado);
+		// echo "<pre>";
+		// print_r($resultado);
+		// echo "</pre>";
+		// exit();
+		
+		// exit();
+
+		// $novores = $resultado['entities'][0]['name'];
+
+		// echo "<pre>";
+		// print_r($resultado['entities'][array_key_first($resultado['entities'])][0]['name']);
+		// echo "</pre>";
+		// exit();
+			
+		
+		
+		$sql = "SELECT * FROM `chat_bot_response_list` WHERE `entity` = '".$resultado['entities'][array_key_first($resultado['entities'])][0]['name']."'";
+		// // $sql = "SELECT * FROM `chat_bot_response_list` where id in (SELECT response_id FROM `chat_bot_keyword_list` where `keyword` = '{$kw}')";
+
+		
+
 		$resp['sql'] = $sql;
 		$qry = $this->conn->query($sql);
 		if($qry){
@@ -137,7 +199,7 @@ Class Master extends DBConnection {
 				$result = $qry->fetch_array();
 				$resp['status'] = 'success';
 				$resp['response'] = $result['response'];
-				$sg_qry = $this->conn->query("SELECT suggestion from `suggestion_list` where response_id = '{$result['id']}'");
+				$sg_qry = $this->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
 				if($sg_qry->num_rows > 0){
 					$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
 				}else{

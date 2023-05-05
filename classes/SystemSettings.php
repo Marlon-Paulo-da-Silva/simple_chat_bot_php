@@ -14,7 +14,7 @@ class SystemSettings extends DBConnection{
 	}
 	function load_system_info(){
 		// if(!isset($_SESSION['system_info'])){
-			$sql = "SELECT * FROM system_info";
+			$sql = "SELECT * FROM chat_bot_system_info";
 			$qry = $this->conn->query($sql);
 				while($row = $qry->fetch_assoc()){
 					$_SESSION['system_info'][$row['meta_field']] = $row['meta_value'];
@@ -22,7 +22,7 @@ class SystemSettings extends DBConnection{
 		// }
 	}
 	function update_system_info(){
-		$sql = "SELECT * FROM system_info";
+		$sql = "SELECT * FROM chat_bot_system_info";
 		$qry = $this->conn->query($sql);
 			while($row = $qry->fetch_assoc()){
 				if(isset($_SESSION['system_info'][$row['meta_field']]))unset($_SESSION['system_info'][$row['meta_field']]);
@@ -42,9 +42,9 @@ class SystemSettings extends DBConnection{
 			if(!in_array($key,array("content")))
 			if(isset($_SESSION['system_info'][$key])){
 				$value = str_replace("'", "&apos;", $value);
-				$qry = $this->conn->query("UPDATE system_info set meta_value = '{$value}' where meta_field = '{$key}' ");
+				$qry = $this->conn->query("UPDATE chat_bot_system_info set meta_value = '{$value}' where meta_field = '{$key}' ");
 			}else{
-				$qry = $this->conn->query("INSERT into system_info set meta_value = '{$value}', meta_field = '{$key}' ");
+				$qry = $this->conn->query("INSERT into chat_bot_system_info set meta_value = '{$value}', meta_field = '{$key}' ");
 			}
 		}
 		// if(isset($_POST['about_us'])){

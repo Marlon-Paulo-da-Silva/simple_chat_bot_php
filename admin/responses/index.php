@@ -35,6 +35,7 @@
 						<th>Date Created</th>
 						<th>Response</th>
 						<th>Keyword</th>
+						<th>Entity</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>
@@ -42,9 +43,9 @@
 				<tbody>
 					<?php 
 					$i = 1;
-						$qry = $conn->query("SELECT * from `response_list`  order by unix_timestamp(`date_created`) desc ");
+						$qry = $conn->query("SELECT * from `chat_bot_response_list`  order by unix_timestamp(`date_created`) desc ");
 						while($row = $qry->fetch_assoc()):
-							$kw_qry = $conn->query("SELECT * FROM keyword_list where response_id = '{$row['id']}'");
+							$kw_qry = $conn->query("SELECT * FROM chat_bot_keyword_list where response_id = '{$row['id']}'");
 							$kws = array_column($kw_qry->fetch_all(MYSQLI_ASSOC), 'keyword');
 							if(count($kws)){
 								$kws = implode(", ",$kws);
@@ -57,6 +58,7 @@
 							<td><?php echo date("Y-m-d H:i",strtotime($row['date_created'])) ?></td>
 							<td><p class="truncate-1 m-0"><?php echo strip_tags($row['response']) ?></p></td>
 							<td><?= $kws ?></td>
+							<td><?= $row['entity'] ?></td>
 							<td class="text-center">
                                 <?php if($row['status'] == 1): ?>
                                     <span class="badge badge-success px-3 rounded-pill">Active</span>

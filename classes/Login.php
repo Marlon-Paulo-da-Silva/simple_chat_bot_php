@@ -23,7 +23,7 @@ class Login extends DBConnection {
 		// $username = $_POST['username'];
 		// $password = $_POST['password'];
 
-		$stmt = $this->conn->prepare("SELECT * from users where username = ? and password = ? ");
+		$stmt = $this->conn->prepare("SELECT * from chat_bot_users where username = ? and password = ? ");
 		$password = md5($password);
 		$stmt->bind_param('ss',$username,$password);
 		$stmt->execute();
@@ -38,7 +38,7 @@ class Login extends DBConnection {
 			$this->settings->set_userdata('login_type',1);
 		return json_encode(array('status'=>'success'));
 		}else{
-		return json_encode(array('status'=>'incorrect','last_qry'=>"SELECT * from users where username = '$username' and password = md5('$password') "));
+		return json_encode(array('status'=>'incorrect','last_qry'=>"SELECT * from chat_bot_users where username = '$username' and password = md5('$password') "));
 		}
 	}
 	public function logout(){
@@ -48,7 +48,7 @@ class Login extends DBConnection {
 	}
 	function login_agent(){
 		extract($_POST);
-		$stmt = $this->conn->prepare("SELECT * from agent_list where email = ? and `password` = ? and delete_flag = 0 ");
+		$stmt = $this->conn->prepare("SELECT * from chat_bot_agent_list where email = ? and `password` = ? and delete_flag = 0 ");
 		$password = md5($password);
 		$stmt->bind_param('ss',$email,$password);
 		$stmt->execute();
