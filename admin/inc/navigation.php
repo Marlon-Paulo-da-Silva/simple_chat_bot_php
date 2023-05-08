@@ -9,7 +9,7 @@
 <!-- Main Sidebar Container -->
       <aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-no-expand">
         <!-- Brand Logo -->
-        <a href="<?php echo base_url ?>admin" class="brand-link bg-gradient-navy text-sm">
+        <a href="../../admin" class="brand-link bg-gradient-navy text-sm">
         <img src="<?php echo validate_image($_settings->info('logo'))?>" alt="Store Logo" class="brand-image img-circle elevation-3" style="opacity: .8;width: 1.5rem;height: 1.5rem;max-height: unset">
         <span class="brand-text font-weight-light"><?php echo $_settings->info('short_name') ?></span>
         </a>
@@ -31,44 +31,44 @@
                 <nav class="mt-4">
                    <ul class="nav nav-pills nav-sidebar flex-column text-sm nav-compact nav-flat nav-child-indent nav-collapse-hide-child" data-widget="treeview" role="menu" data-accordion="false">
                     <li class="nav-item dropdown">
-                      <a href="./" class="nav-link nav-home">
+                      <a href="/imobiliarias/libs/widget-chat/chat_bot_atendimento/admin/" class="nav-link nav-home">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
-                          Dashboard
+                          Painel
                         </p>
                       </a>
                     </li> 
                     <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=responses" class="nav-link nav-responses">
+                      <a href="?page=responses" class="nav-link nav-responses">
                         <i class="nav-icon fas fa-comment-dots"></i>
                         <p>
-                          Responses
+                          Respostas
                         </p>
                       </a>
                     </li>
                     <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=reports" class="nav-link nav-reports">
+                      <a href="?page=reports" class="nav-link nav-reports">
                         <i class="nav-icon far fa-circle"></i>
                         <p>
-                          Report
+                          Relatório
                         </p>
                       </a>
                     </li>
                     <?php if($_settings->userdata('type') == 1): ?>
                     <li class="nav-header">Maintenance</li>
                     <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=user/list" class="nav-link nav-user/list">
+                      <a href="?page=user/list" class="nav-link nav-user/list">
                         <i class="nav-icon fas fa-users-cog"></i>
                         <p>
-                          User List
+                          Lista de Usuários
                         </p>
                       </a>
                     </li>
                     <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=system_info" class="nav-link nav-system_info">
+                      <a href="?page=system_info" class="nav-link nav-system_info">
                         <i class="nav-icon fas fa-tools"></i>
                         <p>
-                          Settings
+                          Configurações
                         </p>
                       </a>
                     </li>

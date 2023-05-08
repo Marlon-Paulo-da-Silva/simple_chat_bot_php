@@ -8,7 +8,7 @@
                 <span class="info-box-text">Total Responses</span>
                 <span class="info-box-number">
                   <?php 
-                    $responses = $conn->query("SELECT * FROM response_list where `status` = 1")->num_rows;
+                    $responses = $conn->query("SELECT * FROM chat_bot_response_list where `status` = 1")->num_rows;
                     echo format_num($responses);
                   ?>
                   <?php ?>
@@ -26,7 +26,7 @@
                 <span class="info-box-text">Total Fetched</span>
                 <span class="info-box-number">
                   <?php 						
-                    $total = $conn->query("SELECT * FROM keyword_fetched")->num_rows;
+                    $total = $conn->query("SELECT * FROM chat_bot_keyword_fetched")->num_rows;
                     echo format_num($total);
                   ?>
                   <?php ?>

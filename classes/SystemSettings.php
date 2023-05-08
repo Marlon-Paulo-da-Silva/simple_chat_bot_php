@@ -78,7 +78,7 @@ class SystemSettings extends DBConnection{
 					$qry = $this->conn->query("UPDATE system_info set meta_value = CONCAT('{$fname}', '?v=',unix_timestamp(CURRENT_TIMESTAMP)) where meta_field = 'logo' ");
 					if(is_file(base_app.$_SESSION['system_info']['logo'])) unlink(base_app.$_SESSION['system_info']['logo']);
 				}else{
-					$qry = $this->conn->query("INSERT into system_info set meta_value = '{$fname}',meta_field = 'logo' ");
+					$qry = $this->conn->query("INSERT into chat_bot_system_info set meta_value = '{$fname}',meta_field = 'logo' ");
 				}
 			}
 			imagedestroy($temp);
@@ -107,7 +107,7 @@ class SystemSettings extends DBConnection{
 					$qry = $this->conn->query("UPDATE system_info set meta_value = CONCAT('{$fname}', '?v=',unix_timestamp(CURRENT_TIMESTAMP)) where meta_field = 'cover' ");
 					if(is_file(base_app.$_SESSION['system_info']['cover'])) unlink(base_app.$_SESSION['system_info']['cover']);
 				}else{
-					$qry = $this->conn->query("INSERT into system_info set meta_value = '{$fname}',meta_field = 'cover' ");
+					$qry = $this->conn->query("INSERT into chat_bot_system_info set meta_value = '{$fname}',meta_field = 'cover' ");
 				}
 			}
 			imagedestroy($temp);

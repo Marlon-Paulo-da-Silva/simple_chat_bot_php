@@ -1,5 +1,5 @@
 <?php 
-$user = $conn->query("SELECT * FROM users where id ='".$_settings->userdata('id')."'");
+$user = $conn->query("SELECT * FROM chat_bot_users where id ='".$_settings->userdata('id')."'");
 foreach($user->fetch_array() as $k =>$v){
 	$meta[$k] = $v;
 }

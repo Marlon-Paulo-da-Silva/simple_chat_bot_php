@@ -9,7 +9,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 }
 ?>
 <div class="content px-2 py-5 bg-gradient-primary">
-	<h4 class="my-3"><b><?= !isset($id) ? "Create New Response" : "Update Response Details" ?></b></h4>
+	<h4 class="my-3"><b><?= !isset($id) ? "Criar nova resposta" : "Atualizar resposta" ?></b></h4>
 </div>
 <div class="row mt-n5 justify-content-center">
 	<div class="col-lg-8 col-md-10 col-sm-12 col-xs-12">
@@ -19,7 +19,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 					<form action="" id="response-form">
 						<input type="hidden" name ="id" value="<?php echo isset($id) ? $id : '' ?>">
 						<div class="form-group">
-							<label for="response" class="control-label">Descrição</label>
+							<label for="response" class="control-label">Descricao</label>
 							<textarea type="text" name="response" id="response" class="form-control form-control-sm rounded-0" required><?php echo isset($response) ? $response : ''; ?></textarea>
 						</div>
 						<div class="form-group">
@@ -33,11 +33,11 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 						<div class="row bg-gradient-primary">
 							<div class="col-12 border m-0 px-2 py-1">Entity</div>
 						</div>
-						<div id="keyword-list" class="mb-3">
+						<div id="entity-list" class="mb-3">
 							
 							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
 								<div class="col-12 border m-0 px-2 py-1 h-100">
-									<textarea name="entity" cols="30" rows="2" class="form-control form-control-sm rounded-0" required="required" style="resize:none"><?php echo isset($entity) ? $entity : '' ?></textarea>
+									<textarea name="entity" cols="30" rows="2" class="form-control form-control-sm rounded-0" required="required" style="resize:none"><?php echo isset($entity) ? $entity: '' ?></textarea>
 								</div>
 								
 							</div>

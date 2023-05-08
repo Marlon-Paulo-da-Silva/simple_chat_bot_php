@@ -1,7 +1,7 @@
 <?php
 
 if(isset($_GET['id']) && $_GET['id'] > 0){
-    $qry = $conn->query("SELECT * from `chat_bot_chat_bot_response_list` where id = '{$_GET['id']}' ");
+    $qry = $conn->query("SELECT * from `chat_bot_response_list` where id = '{$_GET['id']}' ");
     if($qry->num_rows > 0){
         foreach($qry->fetch_assoc() as $k => $v){
             $$k=$v;
@@ -24,7 +24,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                         <ul class="list-group ml-3">
                             <?php if(isset($id)): ?>
                                 <?php  
-                                $kw_qry = $conn->query("SELECT * FROM `chat_bot_chat_bot_keyword_list` where response_id = '{$id}'");
+                                $kw_qry = $conn->query("SELECT * FROM `chat_bot_keyword_list` where response_id = '{$id}'");
                                 while($row = $kw_qry->fetch_assoc()):	
                                 ?>
                                 <li class="list-group-item rounded-0"><?= $row['keyword'] ?></li>

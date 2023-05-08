@@ -35,6 +35,7 @@ Class Master extends DBConnection {
 		}
 		return json_encode($resp);
 	}
+	
 	function save_response(){
 		extract($_POST);
 		$data = "";
@@ -57,10 +58,12 @@ Class Master extends DBConnection {
 			}
 			$kw_arr[]= $v;
 		}
+
+
 		if(empty($id)){
-			$sql = "INSERT INTO `response_list` set {$data} ";
+			$sql = "INSERT INTO `chat_bot_response_list` set {$data} ";
 		}else{
-			$sql = "UPDATE `response_list` set {$data} where id = '{$id}' ";
+			$sql = "UPDATE `chat_bot_response_list` set {$data} where id = '{$id}' ";
 		}
 			$save = $this->conn->query($sql);
 		if($save){
@@ -76,7 +79,10 @@ Class Master extends DBConnection {
 				if(!empty($data2)) $data2 .= ", ";
 				$data2 .= "('{$rid}', '{$kw}')";
 			}
-			$sql2 = "INSERT INTO `keyword_list` (`response_id`, `keyword`) VALUES {$data2}";
+
+
+			
+			$sql2 = "INSERT INTO `chat_bot_keyword_list` (`response_id`, `keyword`) VALUES {$data2}";
 			$this->conn->query("DELETE FROM `chat_bot_keyword_list` where response_id = '{$rid}'");
 			$save2 = $this->conn->query($sql2);
 			if(!$save2){
@@ -95,8 +101,11 @@ Class Master extends DBConnection {
 				if(!empty($data3)) $data3 .= ", ";
 				$data3 .= "('{$rid}', '{$sg}')";
 			}
+
+
+			
 			if(!empty($data3)){
-				$sql3 = "INSERT INTO `suggestion_list` (`response_id`, `suggestion`) VALUES {$data3}";
+				$sql3 = "INSERT INTO `chat_bot_suggestion_list` (`response_id`, `suggestion`) VALUES {$data3}";
 				$save3 = $this->conn->query($sql3);
 				if(!$save3){
 					if(empty($id))
