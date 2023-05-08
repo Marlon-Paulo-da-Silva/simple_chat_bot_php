@@ -5,7 +5,7 @@
         flex-direction: column-reverse;
     }
     #suggestion-list:not(:empty):before {
-        content: 'SugestÃµes';
+        content: 'Sugetões';
         width: 100%;
         display: block;
         color: #ababab;
@@ -105,7 +105,7 @@
             dataType:'json',
             error:err=>{
                 console.log(err)
-                alert("An errror occurred while fetching a response")
+                alert("Ocorreu um erro ao trazer a resposta")
             },
             success:function(resp){
                 console.log(resp)

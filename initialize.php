@@ -10,9 +10,15 @@ $dataConexao = databaseConexao_retorno('local');
 // echo "</pre>";
 // exit();
 
+// echo "<pre>";
+// print_r($_SERVER['REDIRECT_SCRIPT_URI']);
+// echo "</pre>";
+// exit();
+
+
 $dev_data = array('id'=>'-1','firstname'=>'Developer','lastname'=>'','username'=>'admin','password'=>'0192023a7bbd73250516f069df18b500','last_login'=>'','date_updated'=>'','date_added'=>'');
-if(!defined('base_url')) define('base_url', __DIR__);
-if(!defined('base_app')) define('base_app', str_replace('\\','/',__DIR__).'/' );
+if(!defined('base_url')) define('base_url', $_SERVER['REDIRECT_SCRIPT_URI']);
+if(!defined('base_app')) define('base_app', str_replace('\\','/',$_SERVER['REDIRECT_SCRIPT_URI']).'/' );
 // if(!defined('dev_data')) define('dev_data',$dev_data);
 if(!defined('DB_SERVER')) define('DB_SERVER',$dataConexao['url']);
 if(!defined('DB_USERNAME')) define('DB_USERNAME',$dataConexao['usuario']);

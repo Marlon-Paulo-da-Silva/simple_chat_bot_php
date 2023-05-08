@@ -1,5 +1,6 @@
 <?php 
 	require_once('constants.php');
+
 	class Rest {
 		protected $request;
 		protected $serviceName;
@@ -16,10 +17,10 @@
 			$this->validateRequest();
 
 			$db = new DbConnect;
-			$this->dbConn = $db->connect();
+			$this->dbConn = $db->conn;
 
 			if( 'generatetoken' != strtolower( $this->serviceName) ) {
-				$this->validateToken();
+				// $this->validateToken();
 			}
 		}
 
@@ -78,7 +79,7 @@
 				$token = $this->getBearerToken();
 				$payload = JWT::decode($token, SECRETE_KEY, ['HS256']);
 
-				$stmt = $this->dbConn->prepare("SELECT * FROM users WHERE id = :userId");
+				$stmt = $this->dbConn->prepare("SELECT * FROM chat_bot_users WHERE id = :userId");
 				$stmt->bindParam(":userId", $payload->userId);
 				$stmt->execute();
 				$user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -117,7 +118,7 @@
 
 		public function returnResponse($code, $data) {
 			header("content-type: application/json");
-			$response = json_encode(['resonse' => ['status' => $code, "result" => $data]]);
+			$response = json_encode(['response' => ['status' => $code, "result" => $data]]);
 			echo $response; exit;
 		}
 

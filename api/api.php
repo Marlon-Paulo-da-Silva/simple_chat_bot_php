@@ -1,8 +1,14 @@
 <?php 
 
+	require_once('SystemSettings.php');
+
 	class Api extends Rest {
+
+		private $settings;
 		
 		public function __construct() {
+			global $_settings;
+			$this->settings = $_settings;
 			parent::__construct();
 		}
 
@@ -10,7 +16,7 @@
 			$email = $this->validateParameter('email', $this->param['email'], STRING);
 			$pass = $this->validateParameter('pass', $this->param['pass'], STRING);
 			try {
-				$stmt = $this->dbConn->prepare("SELECT * FROM users WHERE email = :email AND password = :pass");
+				$stmt = $this->dbConn->prepare("SELECT * FROM chat_bot_users WHERE email = :email AND password = :pass");
 				$stmt->bindParam(":email", $email);
 				$stmt->bindParam(":pass", $pass);
 				$stmt->execute();
@@ -63,24 +69,40 @@
 		}
 
 		public function getResponses() {
-			// $customerId = $this->validateParameter('customerId', $this->param['customerId'], INTEGER);
 
 			$resp = new Response;
-			// $cust->setId($customerId);
+			// // $cust->setId($customerId);
 			$response = $resp->getAllResponses();
 			if(!is_array($response)) {
 				$this->returnResponse(SUCCESS_RESPONSE, ['message' => 'response details not found.']);
 			}
 
-			// $response['customerId'] 	= $customer['id'];
-			// $response['cutomerName'] 	= $customer['name'];
-			// $response['email'] 			= $customer['email'];
-			// $response['mobile'] 		= $customer['mobile'];
-			// $response['address'] 		= $customer['address'];
-			// $response['createdBy'] 		= $customer['created_user'];
-			// $response['lastUpdatedBy'] 	= $customer['updated_user'];
+			$response = mb_convert_encoding($response, 'UTF-8', 'ISO-8859-1');
+			
+			
+
 			$this->returnResponse(SUCCESS_RESPONSE, $response);
 		}
+
+		public function getResponse() {
+
+			$resp = new Response;
+			$kw = $this->validateParameter('kw', $this->param['kw'], STRING, true);
+
+
+
+			// $response = $resp->getResponse();
+			
+			// if(!is_array($response)) {
+				// 	$this->returnResponse(SUCCESS_RESPONSE, ['message' => 'response details not found.']);
+				// }
+
+			$response = $this->fetch_response($kw);
+				
+			$this->returnResponse(SUCCESS_RESPONSE, $response);
+			// $this->returnResponse(SUCCESS_RESPONSE, 'teste response');
+		}
+		
 		public function getCustomerDetails() {
 			$customerId = $this->validateParameter('customerId', $this->param['customerId'], INTEGER);
 
@@ -138,6 +160,93 @@
 
 			$this->returnResponse(SUCCESS_RESPONSE, $message);
 		}
+
+		public function fetch_response($kw){
+			// extract($_POST);
+	
+			$token = 'RSFVNKM4SDC67NDVPTM7VOAEK576BOXQ';
+	
+	
+			$context = stream_context_create([
+					'http' => [
+							'method' => 'GET',
+							'header' => [
+									'Content-Type: application/json',
+									"authorization: Bearer $token"
+							]
+					]
+			]);
+	
+			$query = array(
+				'q' => $kw
+			);
+			$url = 'https://api.wit.ai/message?v=20230505&' . http_build_query($query,'',null,PHP_QUERY_RFC3986);
+		
+			$resultado = file_get_contents($url, false, $context);
+	
+			// testar se está vindo o json
+			// return $resultado;
+	
+			
+			
+			$resultado = json_decode($resultado, true);
+			// testa o array que veio da api, precisa remover o alert do Home para não confundir
+			// echo "<pre>";
+			// print_r($resultado);
+			// echo "</pre>";
+			
+				
+			
+			$db = new DbConnect();
+	
+			$sql = "SELECT * FROM `chat_bot_response_list` WHERE `entity` = '".$resultado['entities'][array_key_first($resultado['entities'])][0]['name']."'";
+			// // $sql = "SELECT * FROM `chat_bot_response_list` where id in (SELECT response_id FROM `chat_bot_keyword_list` where `keyword` = '{$kw}')";
+	
+			
+	
+			$qry = $db->conn->query($sql);
+			if($qry){
+				if($qry->num_rows > 0){
+					$result = $qry->fetch_array();
+					$resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
+					$sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
+					if($sg_qry->num_rows > 0){
+						$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
+					}else{
+						$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
+					}
+					$resp['suggestions'] = mb_convert_encoding($suggestions, 'UTF-8', 'ISO-8859-1');
+					if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+						$client = $_SERVER['HTTP_CLIENT_IP'];
+					} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+						$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
+					} else {
+						$client = $_SERVER['REMOTE_ADDR'];
+					}
+					$db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
+				}else{
+					$resp['status'] = 'success';
+					// $resp['response'] = $this->settings->info('no_answer');
+					$resp['response'] = 'Sem respostas';
+				}
+			}else{
+				$resp['status'] = "failed";
+				$resp['msg'] = $db->conn->error;
+			}
+	
+	
+			// teste resp
+			// echo "<pre>";
+			// print_r($resp);
+			// echo "</pre>";
+	
+	
+			return $resp;
+			// return json_encode($resp);
+		}
 	}
+
+
+	
 	
  ?>

@@ -168,17 +168,18 @@ Class Master extends DBConnection {
 	
 		$resultado = file_get_contents($url, false, $context);
 
-		$resultado = json_decode($resultado, true);
+		// testar se está vindo o json
+		// return $resultado;
 
-		// return json_encode($resultado);
+		
+		
+		$resultado = json_decode($resultado, true);
+		// testa o array que veio da api, precisa remover o alert do Home para não confundir
 		// echo "<pre>";
 		// print_r($resultado);
 		// echo "</pre>";
-		// exit();
 		
-		// exit();
 
-		// $novores = $resultado['entities'][0]['name'];
 
 		// echo "<pre>";
 		// print_r($resultado['entities'][array_key_first($resultado['entities'])][0]['name']);
@@ -198,14 +199,14 @@ Class Master extends DBConnection {
 			if($qry->num_rows > 0){
 				$result = $qry->fetch_array();
 				$resp['status'] = 'success';
-				$resp['response'] = $result['response'];
+				$resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
 				$sg_qry = $this->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
 				if($sg_qry->num_rows > 0){
 					$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
 				}else{
 					$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
 				}
-				$resp['suggestions'] = $suggestions;
+				$resp['suggestions'] = mb_convert_encoding($suggestions, 'UTF-8', 'ISO-8859-1');
 				if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 					$client = $_SERVER['HTTP_CLIENT_IP'];
 				} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -213,7 +214,7 @@ Class Master extends DBConnection {
 				} else {
 					$client = $_SERVER['REMOTE_ADDR'];
 				}
-				$this->conn->query("INSERT INTO `keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
+				$this->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
 			}else{
 				$resp['status'] = 'success';
 				$resp['response'] = $this->settings->info('no_answer');
@@ -222,6 +223,14 @@ Class Master extends DBConnection {
 			$resp['status'] = "failed";
 			$resp['msg'] = $this->conn->error;
 		}
+
+
+		// teste resp
+		// echo "<pre>";
+		// print_r($resp);
+		// echo "</pre>";
+
+
 		return json_encode($resp);
 	}
 }

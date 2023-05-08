@@ -1,0 +1,29 @@
+{
+    "files.associations":{
+        "*.html": "html",
+        "*.php": "php",
+        "*.js": "javascript",
+        "*.css": "css"
+    },
+    "[html]":{
+        "files.autoGuessEncoding": false,
+        "files.encoding": "iso88591"
+    },
+    "[php]":{
+        "files.autoGuessEncoding": false,
+        "files.encoding": "iso88591"
+    },
+    "[js]":{
+        "files.autoGuessEncoding": false,
+        "files.encoding": "iso88591"
+    },
+    "[javascript]":{
+        "files.autoGuessEncoding": false,
+        "files.encoding": "iso88591"
+    },
+    "[css]":{
+        "files.autoGuessEncoding": false,
+        "files.encoding": "iso88591"
+    },
+    
+}
