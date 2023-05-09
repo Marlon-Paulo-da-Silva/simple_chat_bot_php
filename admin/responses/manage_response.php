@@ -19,7 +19,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 					<form action="" id="response-form">
 						<input type="hidden" name ="id" value="<?php echo isset($id) ? $id : '' ?>">
 						<div class="form-group">
-							<label for="response" class="control-label">Descricao</label>
+							<label for="response" class="control-label">Descrição</label>
 							<textarea type="text" name="response" id="response" class="form-control form-control-sm rounded-0" required><?php echo isset($response) ? $response : ''; ?></textarea>
 						</div>
 						<div class="form-group">

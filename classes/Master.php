@@ -35,7 +35,7 @@ Class Master extends DBConnection {
 		}
 		return json_encode($resp);
 	}
-	
+
 	function save_response(){
 		extract($_POST);
 		$data = "";
@@ -83,6 +83,7 @@ Class Master extends DBConnection {
 
 			
 			$sql2 = "INSERT INTO `chat_bot_keyword_list` (`response_id`, `keyword`) VALUES {$data2}";
+			
 			$this->conn->query("DELETE FROM `chat_bot_keyword_list` where response_id = '{$rid}'");
 			$save2 = $this->conn->query($sql2);
 			if(!$save2){

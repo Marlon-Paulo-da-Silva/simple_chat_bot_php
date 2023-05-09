@@ -30,7 +30,7 @@
 					<?php 
                     $total = 0;
 					$i = 1;
-                    $qry = $conn->query("SELECT *, COALESCE((SELECT count(response_id) FROM `chat_bot_keyword_fetched` where response_id = response_list.id), 0) as `fetched` FROM `chat_bot_response_list` order by COALESCE((SELECT count(response_id) FROM `chat_bot_keyword_fetched` where response_id = response_list.id), 0) desc");
+                    $qry = $conn->query("SELECT *, COALESCE((SELECT count(response_id) FROM `chat_bot_keyword_fetched` where response_id = chat_bot_response_list.id), 0) as `fetched` FROM `chat_bot_response_list` order by COALESCE((SELECT count(response_id) FROM `chat_bot_keyword_fetched` where response_id = response_list.id), 0) desc");
                     while($row = $qry->fetch_assoc()):
 					?>
 						<tr>
