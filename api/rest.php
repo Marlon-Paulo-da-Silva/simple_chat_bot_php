@@ -80,7 +80,7 @@
 				$payload = JWT::decode($token, SECRETE_KEY, ['HS256']);
 
 				$stmt = $this->dbConn->prepare("SELECT * FROM chat_bot_users WHERE id = :userId");
-				$stmt->bindParam(":userId", $payload->userId);
+				// $stmt->bindParam(":userId", $payload->userId);
 				$stmt->execute();
 				$user = $stmt->fetch(PDO::FETCH_ASSOC);
 				if(!is_array($user)) {
