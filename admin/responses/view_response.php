@@ -10,7 +10,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 }
 ?>
 <div class="content px-2 py-5 bg-gradient-primary">
-	<h4 class="my-3"><b>Response Details</b></h4>
+	<h4 class="my-3"><b>Detalhes da resposta</b></h4>
 </div>
 <div class="row mt-n5 justify-content-center">
 	<div class="col-lg-8 col-md-10 col-sm-12 col-xs-12">

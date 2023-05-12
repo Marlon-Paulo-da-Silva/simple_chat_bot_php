@@ -17,10 +17,10 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			<div class="card-body">
 				<div class="container-fluid">
 					<form action="" id="response-form">
-						<input type="hidden" name ="id" value="<?php echo isset($id) ? $id : '' ?>">
+						<input type="hidden" name="id" value="<?php echo isset($id) ? $id : '' ?>">
 						<div class="form-group">
-							<label for="response" class="control-label">Descrição</label>
-							<textarea type="text" name="response" id="response" class="form-control form-control-sm rounded-0" required><?php echo isset($response) ? $response : ''; ?></textarea>
+							<label for="response_ckeditor" class="control-label">Descrição</label>
+							<textarea type="text" name="response" id="response_ckeditor" class="form-control form-control-sm rounded-0" required><?php echo isset($response) ? $response : ''; ?></textarea>
 						</div>
 						<div class="form-group">
 							<label for="status" class="control-label">Status</label>
@@ -29,22 +29,34 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 								<option value="0" <?php echo isset($status) && $status == 0 ? 'selected' : '' ?>>Inactive</option>
 							</select>
 						</div>
+
 						<div class="clear-fix mt-3"></div>
 						<div class="row bg-gradient-primary">
-							<div class="col-12 border m-0 px-2 py-1">Entity</div>
+							<div class="col-12 border m-0 px-2 py-1">Trait</div>
 						</div>
 						<div id="entity-list" class="mb-3">
-							
 							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
 								<div class="col-12 border m-0 px-2 py-1 h-100">
-									<textarea name="entity" cols="30" rows="2" class="form-control form-control-sm rounded-0" required="required" style="resize:none"><?php echo isset($entity) ? $entity: '' ?></textarea>
-								</div>
-								
+									<textarea name="trait" cols="30" rows="2" class="form-control form-control-sm rounded-0" required="required" style="resize:none"><?php echo isset($trait) ? $trait: '' ?></textarea>
+								</div>								
 							</div>
 							
 						</div>
-				
+
 						<div class="clear-fix mt-3"></div>
+						<div class="row bg-gradient-primary">
+							<div class="col-12 border m-0 px-2 py-1">Intent</div>
+						</div>
+						<div id="entity-list" class="mb-3">
+							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
+								<div class="col-12 border m-0 px-2 py-1 h-100">
+									<textarea name="intent" cols="30" rows="2" class="form-control form-control-sm rounded-0" required="required" style="resize:none"><?php echo isset($intent) ? $intent: '' ?></textarea>
+								</div>								
+							</div>
+							
+						</div>
+
+						<!-- <div class="clear-fix mt-3"></div>
 						<div class="row bg-gradient-primary">
 							<div class="col-11 border m-0 px-2 py-1">Keyword</div>
 							<div class="col-1 border m-0 px-2 py-1">Action</div>
@@ -81,11 +93,50 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 						</div>
 						<div class="text-right">
 							<button class="btn btn-primary btn-sm rounded-0" type="button" id="add_kw_item"><i class="far fa-plus-square mb-n2 mr-1"></i>Add Keyword Item</button>
-						</div>
+						</div> -->
+
 						<div class="clear-fix mt-3"></div>
 						<div class="row bg-gradient-primary">
-							<div class="col-11 border m-0 px-2 py-1">Suggestion</div>
-							<div class="col-1 border m-0 px-2 py-1">Action</div>
+							<div class="col-12 border m-0 px-2 py-1">Entities</div>
+						</div>
+						<div id="entity-list" class="mb-3">
+							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
+								<div class="col-12 border m-0 px-2 py-1 h-100">
+									<textarea name="entity1" cols="30" rows="2" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($entity1) ? $entity1: '' ?></textarea>
+								</div>
+							</div>
+							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
+							<div class="col-12 border m-0 px-2 py-1 h-100">
+									<textarea name="entity2" cols="30" rows="2" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($entity2) ? $entity3: '' ?></textarea>
+								</div>
+							</div>
+							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
+								<div class="col-12 border m-0 px-2 py-1 h-100">
+									<textarea name="entity3" cols="30" rows="2" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($entity3) ? $entity7: '' ?></textarea>
+								</div>
+							</div>
+							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
+								<div class="col-12 border m-0 px-2 py-1 h-100">
+									<textarea name="entity4" cols="30" rows="2" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($entity4) ? $entity4: '' ?></textarea>
+								</div>
+							</div>
+							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
+								<div class="col-12 border m-0 px-2 py-1 h-100">
+									<textarea name="entity5" cols="30" rows="2" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($entity5) ? $entity5: '' ?></textarea>
+								</div>
+							</div>
+							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
+								<div class="col-12 border m-0 px-2 py-1 h-100">
+									<textarea name="entity6" cols="30" rows="2" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($entity6) ? $entity6: '' ?></textarea>
+								</div>
+							</div>
+						</div>
+				
+						
+						<div class="clear-fix mt-3"></div>
+						<div class="row bg-gradient-primary">
+							<div class="col-11 border m-0 px-2 py-1">Sugestão</div>
+							<div class="col-1 border m-0 px-2 py-1">Ação</div>
 						</div>
 						<div id="suggestion-list" class="mb-3">
 							<?php if(isset($id)): ?>
@@ -117,14 +168,14 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							</div>
 						</div>
 						<div class="text-right">
-							<button class="btn btn-primary btn-sm rounded-0" type="button" id="add_suggestion_item"><i class="far fa-plus-square mb-n2 mr-1"></i>Add Suggestion Item</button>
+							<button class="btn btn-primary btn-sm rounded-0" type="button" id="add_suggestion_item"><i class="far fa-plus-square mb-n2 mr-1"></i>Adicionar + Item Sugestão</button>
 						</div>
 					</form>
 				</div>
 			</div>
 			<div class="card-footer py-1 text-center">
-				<button class="btn btn-sm btn-primary bg-gradient-primary rounded-0" form="response-form"><i class="fa fa-save"></i> Save</button>
-				<a class="btn btn-sm btn-light bg-gradient-light border rounded-0" href="./?page=responses"><i class="fa fa-angle-left"></i> Cancel</a>
+				<button class="btn btn-sm btn-primary bg-gradient-primary rounded-0" form="response-form"><i class="fa fa-save"></i> Salvar</button>
+				<a class="btn btn-sm btn-light bg-gradient-light border rounded-0" href="./?page=responses"><i class="fa fa-angle-left"></i> Cancelar</a>
 			</div>
 		</div>
 	</div>
@@ -171,18 +222,18 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 				}
 			})
 		})
-		$('#response').summernote({
-			height: "15em",
-			toolbar: [
-				[ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
-				[ 'fontname', [ 'fontname' ] ],
-				[ 'fontsize', [ 'fontsize' ] ],
-				[ 'color', [ 'color' ] ],
-				[ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
-				['insert', ['link', 'picture', 'video']],
-				[ 'view', [ 'undo', 'redo' ] ]
-			]
-		})
+		// $('#response').summernote({
+		// 	height: "15em",
+		// 	toolbar: [
+		// 		[ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+		// 		[ 'fontname', [ 'fontname' ] ],
+		// 		[ 'fontsize', [ 'fontsize' ] ],
+		// 		[ 'color', [ 'color' ] ],
+		// 		[ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+		// 		['insert', ['link', 'picture', 'video']],
+		// 		[ 'view', [ 'undo', 'redo' ] ]
+		// 	]
+		// })
 		$('#response-form').submit(function(e){
 			e.preventDefault();
             var _this = $(this)
@@ -207,24 +258,25 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 					end_loader();
 				},
 				success:function(resp){
+					console.log(resp)
 					if(typeof resp =='object' && resp.status == 'success'){
 						location.href = './?page=responses/view_response&id='+resp.rid
 					}else if(resp.status == 'failed' && !!resp.msg){
-						if('kw_index' in resp){
-							$('[name="keyword[]"]').eq(resp.kw_index).addClass('border-danger').focus()
-							$('[name="keyword[]"]').eq(resp.kw_index)[0].setCustomValidity(resp.msg)
-							$('[name="keyword[]"]').eq(resp.kw_index)[0].reportValidity()
-							$('[name="keyword[]"]').eq(resp.kw_index).on('input', function(){
-								$(this).removeClass('border-danger')
-								$(this)[0].setCustomValidity("")
-							})
-						}else{
-                            el.text(resp.msg)
-                            _this.prepend(el)
-                            el.show('slow')
-                            $("html, body,.modal").scrollTop(0);
-						}
-                    }else{
+						// if('kw_index' in resp){
+						// 	$('[name="keyword[]"]').eq(resp.kw_index).addClass('border-danger').focus()
+						// 	$('[name="keyword[]"]').eq(resp.kw_index)[0].setCustomValidity(resp.msg)
+						// 	$('[name="keyword[]"]').eq(resp.kw_index)[0].reportValidity()
+						// 	$('[name="keyword[]"]').eq(resp.kw_index).on('input', function(){
+						// 		$(this).removeClass('border-danger')
+						// 		$(this)[0].setCustomValidity("")
+						// 	})
+						// }else{
+            //                 el.text(resp.msg)
+            //                 _this.prepend(el)
+            //                 el.show('slow')
+            //                 $("html, body,.modal").scrollTop(0);
+						// }
+          }else{
 						alert_toast("An error occured",'error');
 					}
 					end_loader()
@@ -234,3 +286,39 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 
 	})
 </script>
+
+<script type="text/javascript" src="../../../../../../Scripts/ckeditor4.10/ckeditor.js"></script>
+
+
+<?
+
+function CKeditor($caixa,$q)
+{
+	if ($q==1)
+	{
+		echo "<script type='text/javascript'>CKEDITOR.replace( '".$caixa."' );</script>";
+	}
+	elseif ($q==2)
+	{
+		echo "
+		<script type='text/javascript'>
+			CKEDITOR.replace( '".$caixa."', {
+				height: '300px',
+				toolbar: [
+					{ name: 'basicstyles', items: [ 'Source','-', 'TextColor', 'BGColor' ,'-', 'Bold', 'Italic', 'Underline', 'Strike', '-',
+								'TransformTextToUppercase', 'TransformTextToLowercase', 'TransformTextCapitalize' ] }, 
+					{ name: 'links', items: [ 'Link', 'Image', 'HorizontalRule', 'Table', ] },
+					{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ], items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 
+								'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock' ] },
+					{ name: 'styles', items: [ 'Format', 'Font', 'FontSize' ] }
+				]
+			});	
+		</script>	
+		";	
+	}
+}
+
+CKeditor('response_ckeditor',2);
+
+?>
+

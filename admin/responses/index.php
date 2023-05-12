@@ -13,7 +13,7 @@
 </style>
 <div class="card card-outline rounded-0 card-navy">
 	<div class="card-header">
-		<h3 class="card-title">List of Responses</h3>
+		<h3 class="card-title">Lista de respostas</h3>
 		<div class="card-tools">
 			<a href="./?page=responses/manage_response" id="create_new" class="btn btn-flat btn-primary"><span class="fas fa-plus"></span>  Create New</a>
 		</div>
@@ -32,10 +32,16 @@
 				<thead>
 					<tr>
 						<th>#</th>
-						<th>Date Created</th>
-						<th>Response</th>
-						<th>Keyword</th>
-						<th>Entity</th>
+						<th>Data de criação</th>
+						<th>Resposta</th>
+						<th>Trait</th>
+						<th>Intent</th>
+						<th>Entity1</th>
+						<th>Entity2</th>
+						<th>Entity3</th>
+						<th>Entity4</th>
+						<th>Entity5</th>
+						<th>Entity6</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>
@@ -46,19 +52,25 @@
 						$qry = $conn->query("SELECT * from `chat_bot_response_list`  order by unix_timestamp(`date_created`) desc ");
 						while($row = $qry->fetch_assoc()):
 							$kw_qry = $conn->query("SELECT * FROM chat_bot_keyword_list where response_id = '{$row['id']}'");
-							$kws = array_column($kw_qry->fetch_all(MYSQLI_ASSOC), 'keyword');
-							if(count($kws)){
-								$kws = implode(", ",$kws);
-							}else{
-								$kws = "N/A";
-							}
+							// $kws = array_column($kw_qry->fetch_all(MYSQLI_ASSOC), 'keyword');
+							// if(count($kws)){
+							// 	$kws = implode(", ",$kws);
+							// }else{
+							// 	$kws = "N/A";
+							// }
 					?>
 						<tr>
 							<td class="text-center"><?php echo $i++; ?></td>
-							<td><?php echo date("Y-m-d H:i",strtotime($row['date_created'])) ?></td>
+							<td><?php echo date("d-m-Y H:i",strtotime($row['date_created'])) ?></td>
 							<td><p class="truncate-1 m-0"><?php echo strip_tags($row['response']) ?></p></td>
-							<td><?= $kws?></td>
-							<td><?= $row['entity'] ?></td>
+							<td><?= $row['trait'] ?></td>
+							<td><?= $row['intent'] ?></td>
+							<td><?= $row['entity1'] ?></td>
+							<td><?= $row['entity2'] ?></td>
+							<td><?= $row['entity3'] ?></td>
+							<td><?= $row['entity4'] ?></td>
+							<td><?= $row['entity5'] ?></td>
+							<td><?= $row['entity6'] ?></td>
 							<td class="text-center">
                                 <?php if($row['status'] == 1): ?>
                                     <span class="badge badge-success px-3 rounded-pill">Ativo</span>
@@ -72,8 +84,8 @@
 				                    <span class="sr-only">Toggle Dropdown</span>
 				                  </button>
 				                  <div class="dropdown-menu" role="menu">
-				                    <a class="dropdown-item view_data" href="./?page=responses/view_response&id=<?php echo $row['id'] ?>"><span class="fa fa-eye text-dark"></span> Ver</a>
-				                    <div class="dropdown-divider"></div>
+				                    <!-- <a class="dropdown-item view_data" href="./?page=responses/view_response&id=<?php echo $row['id'] ?>"><span class="fa fa-eye text-dark"></span> Ver</a>
+				                    <div class="dropdown-divider"></div> -->
 				                    <a class="dropdown-item edit_data" href="./?page=responses/manage_response&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Editar</a>
 				                    <div class="dropdown-divider"></div>
 				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-trash text-danger"></span> Apagar</a>
@@ -122,3 +134,5 @@
 		})
 	}
 </script>
+
+

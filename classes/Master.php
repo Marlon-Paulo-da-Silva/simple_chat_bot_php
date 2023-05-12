@@ -40,25 +40,32 @@ Class Master extends DBConnection {
 		extract($_POST);
 		$data = "";
 		foreach($_POST as $k =>$v){
+			// if(!in_array($k,['id', 'suggestion'])){
 			if(!in_array($k,['id', 'keyword', 'suggestion'])){
 				if(!empty($data)) $data .=",";
 				$v = $this->conn->real_escape_string($v);
-				$data .= " `{$k}`='{$v}' ";
+				if($k == 'response'){
+					$data .= " `{$k}`='".mb_convert_encoding($v, 'ISO-8859-1', 'UTF-8')."' ";
+				} else {
+					$data .= " `{$k}`='{$v}' ";
+				}
 			}
 		}
-		$kw_arr=[];
-		foreach($keyword as $k => $v){
-			$v  = trim($this->conn->real_escape_string($v));
-			$check = $this->conn->query("SELECT keyword FROM `chat_bot_keyword_list` where keyword = '{$v}'".(!empty($id) ? " and response_id != '{$id}' " : ""))->num_rows;
-			if($check > 0){
-				$resp['status'] = 'failed';
-				$resp['msg'] = 'Keyword already taken. This might complicate for fetching a response.';
-				$resp['kw_index'] = $k;
-				return json_encode($resp);
-			}
-			$kw_arr[]= $v;
-		}
+		// $kw_arr=[];
+		// foreach($keyword as $k => $v){
+		// 	$v  = trim($this->conn->real_escape_string($v));
+		// 	$check = $this->conn->query("SELECT keyword FROM `chat_bot_keyword_list` where keyword = '{$v}'".(!empty($id) ? " and response_id != '{$id}' " : ""))->num_rows;
+		// 	if($check > 0){
+		// 		$resp['status'] = 'failed';
+		// 		$resp['msg'] = 'Keyword already taken. This might complicate for fetching a response.';
+		// 		$resp['kw_index'] = $k;
+		// 		return json_encode($resp);
+		// 	}
+		// 	$kw_arr[]= $v;
+		// }
 
+
+		// $data = mb_convert_encoding($data, 'ISO-8859-1', 'UTF-8');
 
 		if(empty($id)){
 			$sql = "INSERT INTO `chat_bot_response_list` set {$data} ";
@@ -71,9 +78,9 @@ Class Master extends DBConnection {
 			$resp['rid'] = $rid;
 			$resp['status'] = 'success';
 			if(empty($id))
-				$resp['msg'] = "New Response successfully saved.";
+				$resp['msg'] = "Nova Resposta salva com successo.";
 			else
-				$resp['msg'] = " Response successfully updated.";
+				$resp['msg'] = " Resposta atualizada com successo.";
 			$data2="";
 			foreach($kw_arr as $kw){
 				if(!empty($data2)) $data2 .= ", ";
@@ -82,17 +89,17 @@ Class Master extends DBConnection {
 
 
 			
-			$sql2 = "INSERT INTO `chat_bot_keyword_list` (`response_id`, `keyword`) VALUES {$data2}";
+			// $sql2 = "INSERT INTO `chat_bot_keyword_list` (`response_id`, `keyword`) VALUES {$data2}";
 			
-			$this->conn->query("DELETE FROM `chat_bot_keyword_list` where response_id = '{$rid}'");
-			$save2 = $this->conn->query($sql2);
-			if(!$save2){
-				if(empty($id))
-				$this->conn->query("DELETE FROM `chat_bot_keyword_list` where response_id = '{$rid}'");
-				$resp['status'] = 'failed';
-				$resp['msg'] = $this->conn->error;
-				$resp['sql'] = $sql2;
-			}
+			// $this->conn->query("DELETE FROM `chat_bot_keyword_list` where response_id = '{$rid}'");
+			// $save2 = $this->conn->query($sql2);
+			// if(!$save2){
+			// 	if(empty($id))
+			// 	$this->conn->query("DELETE FROM `chat_bot_keyword_list` where response_id = '{$rid}'");
+			// 	$resp['status'] = 'failed';
+			// 	$resp['msg'] = $this->conn->error;
+			// 	$resp['sql'] = $sql2;
+			// }
 			$data3="";
 			$this->conn->query("DELETE FROM `chat_bot_suggestion_list` where response_id = '{$rid}'");
 			foreach($suggestion as $sg){
@@ -104,6 +111,7 @@ Class Master extends DBConnection {
 			}
 
 
+			// $data3 = mb_convert_encoding($data3, 'ISO-8859-1', 'UTF-8');
 			
 			if(!empty($data3)){
 				$sql3 = "INSERT INTO `chat_bot_suggestion_list` (`response_id`, `suggestion`) VALUES {$data3}";
@@ -209,6 +217,7 @@ Class Master extends DBConnection {
 			if($qry->num_rows > 0){
 				$result = $qry->fetch_array();
 				$resp['status'] = 'success';
+				$resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
 				$resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
 				$sg_qry = $this->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
 				if($sg_qry->num_rows > 0){

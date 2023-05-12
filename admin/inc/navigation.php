@@ -1,6 +1,7 @@
 <style>
   aside.main-sidebar{
-    background-image:url('<?= validate_image($_settings->info('cover')) ?>') !important;
+    /* background-image:url('https://sandbox.imobibrasil.app.br/imobiliarias/libs/widget-chat/chat_bot_atendimento/uploads/imobibrasil.png') !important; */
+    background-image:url('<? validate_image($_settings->info('cover')) ?>') !important;
     background-size:cover;
     background-repeat:no-repeat;
     background-position:center center;
@@ -10,7 +11,7 @@
       <aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-no-expand">
         <!-- Brand Logo -->
         <a href="../../admin" class="brand-link bg-gradient-navy text-sm">
-        <img src="<?php echo validate_image($_settings->info('logo'))?>" alt="Store Logo" class="brand-image img-circle elevation-3" style="opacity: .8;width: 1.5rem;height: 1.5rem;max-height: unset">
+        <img src="https://sandbox.imobibrasil.app.br/imobiliarias/libs/widget-chat/chat_bot_atendimento/uploads/imobibrasil.png" alt="Store Logo" class="brand-image img-circle elevation-3" style="opacity: .8;width: 1.5rem;height: 1.5rem;max-height: unset">
         <span class="brand-text font-weight-light"><?php echo $_settings->info('short_name') ?></span>
         </a>
         <!-- Sidebar -->

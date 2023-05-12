@@ -194,18 +194,18 @@
 		$('.rem_img').click(function(){
             _conf("Are sure to delete this image permanently?",'delete_img',["'"+$(this).attr('data-path')+"'"])
         })
-		$('.summernote').summernote({
-			height: 200,
-			toolbar: [
-				[ 'style', [ 'style' ] ],
-				[ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
-				[ 'fontname', [ 'fontname' ] ],
-				[ 'fontsize', [ 'fontsize' ] ],
-				[ 'color', [ 'color' ] ],
-				[ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
-				[ 'table', [ 'table' ] ],
-				[ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview', 'help' ] ]
-			]
-		})
+		// $('.summernote').summernote({
+		// 	height: 200,
+		// 	toolbar: [
+		// 		[ 'style', [ 'style' ] ],
+		// 		[ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+		// 		[ 'fontname', [ 'fontname' ] ],
+		// 		[ 'fontsize', [ 'fontsize' ] ],
+		// 		[ 'color', [ 'color' ] ],
+		// 		[ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+		// 		[ 'table', [ 'table' ] ],
+		// 		[ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview', 'help' ] ]
+		// 	]
+		// })
 	})
 </script>
