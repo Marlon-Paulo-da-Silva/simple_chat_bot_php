@@ -43,12 +43,8 @@ Class Master extends DBConnection {
 			// if(!in_array($k,['id', 'suggestion'])){
 			if(!in_array($k,['id', 'keyword', 'suggestion'])){
 				if(!empty($data)) $data .=",";
-				$v = $this->conn->real_escape_string($v);
-				if($k == 'response'){
-					$data .= " `{$k}`='".mb_convert_encoding($v, 'ISO-8859-1', 'UTF-8')."' ";
-				} else {
-					$data .= " `{$k}`='{$v}' ";
-				}
+				$v = $this->conn->real_escape_string($v);	
+				$data .= " `{$k}`='{$v}' ";
 			}
 		}
 		// $kw_arr=[];

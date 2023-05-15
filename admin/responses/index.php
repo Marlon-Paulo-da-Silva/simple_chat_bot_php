@@ -15,7 +15,7 @@
 	<div class="card-header">
 		<h3 class="card-title">Lista de respostas</h3>
 		<div class="card-tools">
-			<a href="./?page=responses/manage_response" id="create_new" class="btn btn-flat btn-primary"><span class="fas fa-plus"></span>  Create New</a>
+			<a href="./?page=responses/manage_response" id="create_new" class="btn btn-flat btn-primary"><span class="fas fa-plus"></span>  Criar nova</a>
 		</div>
 	</div>
 	<div class="card-body">

@@ -180,6 +180,9 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript" src="../../../../../../Scripts/ckeditor4.10/ckeditor.js"></script>
+
 <script>
 	$(document).ready(function(){
 		$('#keyword-list .kw-item').find('.rem-item').click(function(){
@@ -236,12 +239,20 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 		// })
 		$('#response-form').submit(function(e){
 			e.preventDefault();
-            var _this = $(this)
-			 $('.err-msg').remove();
-			 $('.border-danger').removeClass('border-danger')
-			 var el = $('<div>')
-				 el.addClass("alert alert-danger err-msg")
-				 el.hide()
+			var _this = $(this)
+			$('.err-msg').remove();
+			$('.border-danger').removeClass('border-danger')
+			var el = $('<div>')
+			el.addClass("alert alert-danger err-msg")
+			el.hide()
+			var content = '';
+
+			for(instance in CKEDITOR.instances){
+				content = CKEDITOR.instances[instance].getData();
+			}
+		
+			document.getElementById('response_ckeditor').value = content;
+
 			start_loader();
 			$.ajax({
 				url:_base_url_+"classes/Master.php?f=save_response",
@@ -255,7 +266,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 				error:err=>{
 					console.log(err)
 					alert_toast("An error occured",'error');
-					end_loader();
+					// end_loader();
 				},
 				success:function(resp){
 					console.log(resp)
@@ -287,7 +298,6 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 	})
 </script>
 
-<script type="text/javascript" src="../../../../../../Scripts/ckeditor4.10/ckeditor.js"></script>
 
 
 <?

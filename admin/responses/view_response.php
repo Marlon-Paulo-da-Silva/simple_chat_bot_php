@@ -19,7 +19,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 				<div class="container-fluid">
                     <legend>Response</legend>
                     <div class="pl-3"><?= isset($response) ? $response : '' ?></div>
-                    <fieldset>
+                    <!-- <fieldset>
                         <legend>Keywords</legend>
                         <ul class="list-group ml-3">
                             <?php if(isset($id)): ?>
@@ -29,6 +29,40 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                 ?>
                                 <li class="list-group-item rounded-0"><?= $row['keyword'] ?></li>
                                 <?php endwhile; ?>
+							<?php endif; ?>
+                        </ul>
+                    </fieldset> -->
+                    <fieldset>
+                        <legend>Trait</legend>
+                        <ul class="list-group ml-3">
+                            <?php if(isset($id)): ?>
+                           
+                                <li class="list-group-item rounded-0"><?= isset($trait) ? $trait : '' ?></li>
+                                
+							<?php endif; ?>
+                        </ul>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Intenty</legend>
+                        <ul class="list-group ml-3">
+                            <?php if(isset($id)): ?>
+                               
+                                <li class="list-group-item rounded-0"><?= $intent ?></li>
+
+							<?php endif; ?>
+                        </ul>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Entities</legend>
+                        <ul class="list-group ml-3">
+                            <?php if(isset($id)): ?>
+                               
+                                <li class="list-group-item rounded-0"><?= $entity1 ?></li>
+                                <li class="list-group-item rounded-0"><?= $entity2 ?></li>
+                                <li class="list-group-item rounded-0"><?= $entity3 ?></li>
+                                <li class="list-group-item rounded-0"><?= $entity4 ?></li>
+                                <li class="list-group-item rounded-0"><?= $entity5 ?></li>
+                                <li class="list-group-item rounded-0"><?= $entity6 ?></li>
 							<?php endif; ?>
                         </ul>
                     </fieldset>
@@ -48,8 +82,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 				</div>
 			</div>
 			<div class="card-footer py-1 text-center">
-				<a class="btn btn-sm btn-primary bg-gradient-primary rounded-0" href="./?page=responses/manage_response&id=<?= isset($id) ? $id : '' ?>"><i class="fa fa-edit"></i> Edit</a>
-				<a class="btn btn-sm btn-light bg-gradient-light border rounded-0" href="./?page=responses"><i class="fa fa-angle-left"></i> Back to List</a>
+				<a class="btn btn-sm btn-primary bg-gradient-primary rounded-0" href="./?page=responses/manage_response&id=<?= isset($id) ? $id : '' ?>"><i class="fa fa-edit"></i> Editar</a>
+				<a class="btn btn-sm btn-light bg-gradient-light border rounded-0" href="./?page=responses"><i class="fa fa-angle-left"></i> Voltar para a lista</a>
 			</div>
 		</div>
 	</div>
