@@ -29,6 +29,20 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 								<option value="0" <?php echo isset($status) && $status == 0 ? 'selected' : '' ?>>Inactive</option>
 							</select>
 						</div>
+						<div class="form-group">
+							<label for="category" class="control-label">Categoria</label>
+							<select name="category" id="category" class="form-control form-control-sm rounded-0" required>
+
+								<?php  
+									$cat_qry = $conn->query("SELECT * FROM `chat_bot_category_list`");
+									while($row = $cat_qry->fetch_assoc()):	
+								?>
+									<option value="<?= $row['id']; ?>" <?php echo isset($category) && $category == $row['id'] ? 'selected' : '' ?>><?= $row['name']; ?></option>
+
+								<?php endwhile; ?>
+							
+							</select>
+						</div>
 
 						<div class="clear-fix mt-3"></div>
 						<div class="row bg-gradient-primary">
