@@ -121,12 +121,12 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							</div>
 							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
 							<div class="col-12 border m-0 px-2 py-1 h-100">
-									<textarea name="entity2" cols="30" rows="2" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($entity2) ? $entity3: '' ?></textarea>
+									<textarea name="entity2" cols="30" rows="2" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($entity2) ? $entity2: '' ?></textarea>
 								</div>
 							</div>
 							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
 								<div class="col-12 border m-0 px-2 py-1 h-100">
-									<textarea name="entity3" cols="30" rows="2" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($entity3) ? $entity7: '' ?></textarea>
+									<textarea name="entity3" cols="30" rows="2" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($entity3) ? $entity3: '' ?></textarea>
 								</div>
 							</div>
 							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">

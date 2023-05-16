@@ -82,6 +82,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 				</div>
 			</div>
 			<div class="card-footer py-1 text-center">
+				<a class="btn btn-sm btn-primary bg-gradient-primary rounded-0" href="./?page=responses/manage_response"><span class="fas fa-plus"></span> Criar nova</a>
 				<a class="btn btn-sm btn-primary bg-gradient-primary rounded-0" href="./?page=responses/manage_response&id=<?= isset($id) ? $id : '' ?>"><i class="fa fa-edit"></i> Editar</a>
 				<a class="btn btn-sm btn-light bg-gradient-light border rounded-0" href="./?page=responses"><i class="fa fa-angle-left"></i> Voltar para a lista</a>
 			</div>
