@@ -100,17 +100,16 @@
 
 			$response = $this->fetch_response($kw);
 
-
 			function utf8ize($d) {
-				if (is_array($d)) {
-						foreach ($d as $k => $v) {
-								$d[$k] = mb_convert_encoding($v, 'UTF-8', 'ISO-8859-1');
-						}
-				} else if (is_string ($d)) {
-						return mb_convert_encoding($d, 'UTF-8', 'ISO-8859-1');
-				}
-				return $d;
-		}
+					if (is_array($d)) {
+							foreach ($d as $k => $v) {
+									$d[$k] = mb_convert_encoding($v, 'UTF-8', 'ISO-8859-1');
+							}
+					} else if (is_string ($d)) {
+							return mb_convert_encoding($d, 'UTF-8', 'ISO-8859-1');
+					}
+					return $d;
+			}
 
 			// echo $response; exit;
 				
@@ -344,7 +343,7 @@
 									if(count($resultado['intents']) > 0){
 										$resp['status'] = 'success';
 										// $resp['response'] = $this->settings->info('no_answer');
-										$resp['response'] = 'Poderia ser mais específico em relação ao que você quer <strong>' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '</strong>?';
+										$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
 									}
 	
 									if(count($resultado['intents']) < 0){
@@ -485,7 +484,7 @@
 											if(count($resultado['intents']) > 0){
 												$resp['status'] = 'success';
 												// $resp['response'] = $this->settings->info('no_answer');
-												$resp['response'] = 'Poderia ser mais específico em relação ao que você quer <strong>' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '</strong>?';
+												$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
 											}
 			
 											if(count($resultado['intents']) < 0){
@@ -622,7 +621,7 @@
 								if(count($resultado['intents']) > 0){
 									$resp['status'] = 'success';
 									// $resp['response'] = $this->settings->info('no_answer');
-									$resp['response'] = 'Poderia ser mais específico em relação ao que você quer <strong>' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '</strong>?';
+									$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
 								}
 
 								if(count($resultado['intents']) < 0){
@@ -649,23 +648,20 @@
 			}
 
 
-
 			$resp['traits'] = $countTraits;
 			$resp['entities'] = $countEntities;
 
-
-	
-			
-	
-	
 			// teste resp
 			// echo "<pre>";
 			// print_r($resp);
 			// echo "</pre>";
 	
+
+
 	
 			// echo $resp;
 			// return;
+			// echo utf8ize($resp);
 			return $resp;
 			// return json_encode($resp);
 		}
