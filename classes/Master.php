@@ -38,12 +38,19 @@ Class Master extends DBConnection {
 
 	function save_response(){
 		extract($_POST);
+
+		// $question = mb_convert_encoding($question,'ISO-8859-1', 'UTF-8');
+		
 		$data = "";
 		foreach($_POST as $k =>$v){
 			// if(!in_array($k,['id', 'suggestion'])){
 			if(!in_array($k,['id', 'keyword', 'suggestion'])){
 				if(!empty($data)) $data .=",";
 				$v = $this->conn->real_escape_string($v);	
+				if($k == 'question'){
+					$v = mb_convert_encoding($v,'ISO-8859-1', 'UTF-8');
+					// return json_encode([$k => " `{$k}`='{$v}' "]);
+				}
 				$data .= " `{$k}`='{$v}' ";
 			}
 		}
@@ -127,6 +134,9 @@ Class Master extends DBConnection {
 		if($resp['status'] == 'success')
 			$this->settings->set_flashdata('success',$resp['msg']);
 			return json_encode($resp);
+
+			// return json_encode($_POST['question']);
+		
 	}
 	function delete_response(){
 		extract($_POST);

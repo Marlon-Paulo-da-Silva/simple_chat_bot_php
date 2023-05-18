@@ -25,6 +25,7 @@
 					<col width="3%">
 					<col width="10%">
 					<col width="25%">
+					<col width="15%">
 					<col width="8%">
 					<col width="15%">
 					<col width="5%">
@@ -34,6 +35,7 @@
 						<th>#</th>
 						<th>Data de criação</th>
 						<th>Resposta</th>
+						<th>Pergunta</th>
 						<th>Categoria</th>
 						<th>Trait</th>
 						<th>Intent</th>
@@ -64,6 +66,7 @@
 							<td class="text-center"><?php echo $i++; ?></td>
 							<td><?php echo date("d-m-Y H:i",strtotime($row['date_created'])) ?></td>
 							<td><p class="truncate-1 m-0"><?php echo strip_tags($row['response']) ?></p></td>
+							<td><?= $row['question'] ?></td>
 							<td><?= $row['name_category'] ?></td>
 							<td><?= $row['trait'] ?></td>
 							<td><?= $row['intent'] ?></td>

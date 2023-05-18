@@ -22,6 +22,20 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							<label for="response_ckeditor" class="control-label">Descrição</label>
 							<textarea type="text" name="response" id="response_ckeditor" class="form-control form-control-sm rounded-0" required><?php echo isset($response) ? $response : ''; ?></textarea>
 						</div>
+
+						<div class="clear-fix mt-3"></div>
+						<div class="row bg-gradient-primary">
+							<div class="col-12 border m-0 px-2 py-1">Pergunta possível</div>
+						</div>
+						<div id="entity-list" class="mb-3">
+							<div class="row bg-gradient-light align-items-center kw-item" style="height:4.5em">
+								<div class="col-12 border m-0 px-2 py-1 h-100">
+									<textarea id="question" name="question" cols="30" rows="2" class="form-control form-control-sm rounded-0" required="required" style="resize:none"><?php echo isset($question) ? $question: '' ?></textarea>
+								</div>								
+							</div>
+							
+						</div>
+
 						<div class="form-group">
 							<label for="status" class="control-label">Status</label>
 							<select name="status" id="status" class="form-control form-control-sm rounded-0" required>
@@ -267,6 +281,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 		
 			document.getElementById('response_ckeditor').value = content;
 
+
 			start_loader();
 			$.ajax({
 				url:_base_url_+"classes/Master.php?f=save_response",
@@ -283,7 +298,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 					// end_loader();
 				},
 				success:function(resp){
-					console.log(resp)
+					console.log(resp);
 					if(typeof resp =='object' && resp.status == 'success'){
 						location.href = './?page=responses/view_response&id='+resp.rid
 					}else if(resp.status == 'failed' && !!resp.msg){
