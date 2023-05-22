@@ -13,7 +13,7 @@
 </style>
 <div class="card card-outline rounded-0 card-navy">
 	<div class="card-header">
-		<h3 class="card-title">Lista de respostas</h3>
+		<h3 class="card-title">Perguntas não encontradas</h3>
 		<div class="card-tools">
 			<a href="./?page=responses/manage_response" id="create_new" class="btn btn-flat btn-primary"><span class="fas fa-plus"></span>  Criar nova</a>
 		</div>
@@ -23,38 +23,29 @@
 			<table class="table table-hover table-striped table-bordered" id="list">
 				<colgroup>
 					<col width="3%">
-					<col width="10%">
 					<col width="25%">
+					<col width="5%">
 					<col width="15%">
-					<col width="8%">
 					<col width="15%">
+					<col width="7%">
 					<col width="5%">
 				</colgroup>
 				<thead>
 					<tr>
-						<th>#</th>
-						<th>Data de criação</th>
-						<th>Resposta</th>
+						<th style="text-align: center;">#</th>
 						<th>Pergunta</th>
-						<th>Categoria</th>
-						<th>Trait</th>
-						<th>Intent</th>
-						<th>Entity1</th>
-						<th>Entity2</th>
-						<th>Entity3</th>
-						<th>Entity4</th>
-						<th>Entity5</th>
-						<th>Entity6</th>
-						<th>Status</th>
-						<th>Action</th>
+						<th>Cad</th>
+						<th>Site</th>
+						<th>Nome</th>
+						<th>Data</th>
+						<th>Ação</th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php 
 					$i = 1;
-						$qry = $conn->query("SELECT *, (select chat_bot_category_list.name from chat_bot_category_list where chat_bot_response_list.category = chat_bot_category_list.id limit 1) as name_category from `chat_bot_response_list` order by unix_timestamp(`date_created`) desc ");
+						$qry = $conn->query("SELECT *, ( SELECT cadastro.website_cad FROM cadastro WHERE cadastro.codigo_cad = chat_bot_question_not_found_list.cod_cad LIMIT 1 ) AS site,( SELECT cadastro_usuarios.nome_cus FROM cadastro_usuarios WHERE ( chat_bot_question_not_found_list.cod_cad = cadastro_usuarios.codigo_cad AND chat_bot_question_not_found_list.cod_usu = cadastro_usuarios.codigo_cus ) LIMIT 1 ) AS nome_usu,( SELECT cadastro.nomefantasia_cad FROM cadastro WHERE ( chat_bot_question_not_found_list.cod_cad = cadastro.codigo_cad ) LIMIT 1 ) AS nome_adm FROM `chat_bot_question_not_found_list` ORDER BY UNIX_TIMESTAMP(`date_created`) DESC");
 						while($row = $qry->fetch_assoc()):
-							$kw_qry = $conn->query("SELECT * FROM chat_bot_keyword_list where response_id = '{$row['id']}'");
 							// $kws = array_column($kw_qry->fetch_all(MYSQLI_ASSOC), 'keyword');
 							// if(count($kws)){
 							// 	$kws = implode(", ",$kws);
@@ -64,26 +55,12 @@
 					?>
 						<tr>
 							<td class="text-center"><?php echo $i++; ?></td>
-							<td><?php echo date("d/m/Y H:i",strtotime($row['date_created'])) ?></td>
-							<td><p class="truncate-1 m-0"><?php echo strip_tags($row['response']) ?></p></td>
 							<td><?= $row['question'] ?></td>
-							<td><?= $row['name_category'] ?></td>
-							<td><?= $row['trait'] ?></td>
-							<td><?= $row['intent'] ?></td>
-							<td><?= $row['entity1'] ?></td>
-							<td><?= $row['entity2'] ?></td>
-							<td><?= $row['entity3'] ?></td>
-							<td><?= $row['entity4'] ?></td>
-							<td><?= $row['entity5'] ?></td>
-							<td><?= $row['entity6'] ?></td>
-							<td class="text-center">
-                                <?php if($row['status'] == 1): ?>
-                                    <span class="badge badge-success px-3 rounded-pill">Ativo</span>
-                                <?php else: ?>
-                                    <span class="badge badge-danger px-3 rounded-pill">Inativo</span>
-                                <?php endif; ?>
-                            </td>
-							<td align="center">
+							<td><?= $row['cod_cad'] ?></td>
+							<td><?= $row['site'] ?></td>
+							<td><?= ($row['nome_usu'] == NULL ? $row['nome_adm'] : $row['nome_usu']) ?></td>
+							<td><?php echo date("d/m/Y H:i",strtotime($row['date_created'])) ?></td>
+					    <td align="center">
 								 <button type="button" class="btn btn-flat p-1 btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
 				                  		Ação
 				                    <span class="sr-only">Toggle Dropdown</span>
@@ -91,8 +68,8 @@
 				                  <div class="dropdown-menu" role="menu">
 				                    <!-- <a class="dropdown-item view_data" href="./?page=responses/view_response&id=<?php echo $row['id'] ?>"><span class="fa fa-eye text-dark"></span> Ver</a>
 				                    <div class="dropdown-divider"></div> -->
-				                    <a class="dropdown-item edit_data" href="./?page=responses/manage_response&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Editar</a>
-				                    <div class="dropdown-divider"></div>
+				                    <!-- <a class="dropdown-item edit_data" href="./?page=responses/manage_response&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Editar</a>
+				                    <div class="dropdown-divider"></div> -->
 				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-trash text-danger"></span> Apagar</a>
 				                  </div>
 							</td>
@@ -122,7 +99,7 @@
 	function delete_response($id){
 		start_loader();
 		$.ajax({
-			url:_base_url_+"classes/Master.php?f=delete_response",
+			url:_base_url_+"classes/Master.php?f=delete_asknotfound",
 			method:"POST",
 			data:{id: $id},
 			dataType:"json",

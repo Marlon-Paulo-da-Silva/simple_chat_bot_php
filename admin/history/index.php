@@ -24,35 +24,27 @@
 				<colgroup>
 					<col width="3%">
 					<col width="10%">
-					<col width="25%">
 					<col width="15%">
+					<col width="35%">
 					<col width="8%">
-					<col width="15%">
+					<col width="8%">
 					<col width="5%">
 				</colgroup>
 				<thead>
 					<tr>
 						<th>#</th>
-						<th>Data de criação</th>
-						<th>Resposta</th>
-						<th>Pergunta</th>
-						<th>Categoria</th>
-						<th>Trait</th>
-						<th>Intent</th>
-						<th>Entity1</th>
-						<th>Entity2</th>
-						<th>Entity3</th>
-						<th>Entity4</th>
-						<th>Entity5</th>
-						<th>Entity6</th>
-						<th>Status</th>
-						<th>Action</th>
+						<th>Data</th>
+						<th>Nome</th>
+						<th>Conversa</th>
+						<th>Site</th>
+						<th>Cad</th>
+						<th>Ação</th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php 
 					$i = 1;
-						$qry = $conn->query("SELECT *, (select chat_bot_category_list.name from chat_bot_category_list where chat_bot_response_list.category = chat_bot_category_list.id limit 1) as name_category from `chat_bot_response_list` order by unix_timestamp(`date_created`) desc ");
+						$qry = $conn->query("SELECT *, ( SELECT cadastro.website_cad FROM cadastro WHERE cadastro.codigo_cad = chat_bot_historico_conversa.cod_cad LIMIT 1 ) AS site FROM `chat_bot_historico_conversa` order by unix_timestamp(`data_conv`) desc ");
 						while($row = $qry->fetch_assoc()):
 							$kw_qry = $conn->query("SELECT * FROM chat_bot_keyword_list where response_id = '{$row['id']}'");
 							// $kws = array_column($kw_qry->fetch_all(MYSQLI_ASSOC), 'keyword');
@@ -64,35 +56,26 @@
 					?>
 						<tr>
 							<td class="text-center"><?php echo $i++; ?></td>
-							<td><?php echo date("d/m/Y H:i",strtotime($row['date_created'])) ?></td>
-							<td><p class="truncate-1 m-0"><?php echo strip_tags($row['response']) ?></p></td>
-							<td><?= $row['question'] ?></td>
-							<td><?= $row['name_category'] ?></td>
-							<td><?= $row['trait'] ?></td>
-							<td><?= $row['intent'] ?></td>
-							<td><?= $row['entity1'] ?></td>
-							<td><?= $row['entity2'] ?></td>
-							<td><?= $row['entity3'] ?></td>
-							<td><?= $row['entity4'] ?></td>
-							<td><?= $row['entity5'] ?></td>
-							<td><?= $row['entity6'] ?></td>
-							<td class="text-center">
-                                <?php if($row['status'] == 1): ?>
-                                    <span class="badge badge-success px-3 rounded-pill">Ativo</span>
-                                <?php else: ?>
-                                    <span class="badge badge-danger px-3 rounded-pill">Inativo</span>
-                                <?php endif; ?>
-                            </td>
-							<td align="center">
+							<td><?php echo date("d/m/Y H:i",strtotime($row['data_conv'])) ?></td>
+							<td><?= $row['nome_usu'] ?></td>
+							<!-- <td><p class="truncate-1 m-0"><?php echo strip_tags($row['response']) ?></p></td> -->
+							<td>
+                <div style="max-height: 100px;overflow: hidden;">
+                  <?= $row['conversa'] ?>
+                </div>
+              </td>
+							<td><?= $row['site'] ?></td>
+							<td><?= $row['cod_cad'] ?></td>
+              <td align="center">
 								 <button type="button" class="btn btn-flat p-1 btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
 				                  		Ação
 				                    <span class="sr-only">Toggle Dropdown</span>
 				                  </button>
 				                  <div class="dropdown-menu" role="menu">
-				                    <!-- <a class="dropdown-item view_data" href="./?page=responses/view_response&id=<?php echo $row['id'] ?>"><span class="fa fa-eye text-dark"></span> Ver</a>
-				                    <div class="dropdown-divider"></div> -->
-				                    <a class="dropdown-item edit_data" href="./?page=responses/manage_response&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Editar</a>
+				                    <a class="dropdown-item view_data" href="./?page=history/view_history&id=<?php echo $row['id'] ?>"><span class="fa fa-eye text-dark"></span> Ver</a>
 				                    <div class="dropdown-divider"></div>
+				                    <!-- <a class="dropdown-item edit_data" href="./?page=responses/manage_response&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Editar</a>
+				                    <div class="dropdown-divider"></div> -->
 				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-trash text-danger"></span> Apagar</a>
 				                  </div>
 							</td>
@@ -106,7 +89,7 @@
 <script>
 	$(document).ready(function(){
 		$('.delete_data').click(function(){
-			_conf("Tem a certeza de que pretende apagar esta resposta permanentemente?","delete_response",[$(this).attr('data-id')])
+			_conf("Tem a certeza de que pretende apagar este histórico permanentemente?","delete_response",[$(this).attr('data-id')])
 		})
 		$('.table').dataTable({
 			columnDefs: [
@@ -122,7 +105,7 @@
 	function delete_response($id){
 		start_loader();
 		$.ajax({
-			url:_base_url_+"classes/Master.php?f=delete_response",
+			url:_base_url_+"classes/Master.php?f=delete_history",
 			method:"POST",
 			data:{id: $id},
 			dataType:"json",

@@ -191,6 +191,10 @@
 							]
 					]
 			]);
+
+			$db = new DbConnect();
+
+			$kw = mysqli_real_escape_string($db->conn, $kw);
 	
 			$query = array(
 				'q' => $kw
@@ -218,7 +222,7 @@
 			
 				
 			
-			$db = new DbConnect();
+			
 
 			$resp = [];
 
@@ -340,17 +344,78 @@
 										}
 										$db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
 									}else{
-		
-										if(count($resultado['intents']) > 0){
-											$resp['status'] = 'success';
-											// $resp['response'] = $this->settings->info('no_answer');
-											$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
+										$sqlWhereIn = " WHERE ";
+
+										foreach($resultado['entities'] as $key => $value){
+
+										$sqlWhereIn .= " ( ";	
+				
+										for ($i=1; $i <= 6; $i++) { 
+				
+											$sqlWhereIn .= " entity".$i." IN(";
+				
+											
+												// // $key = explode(':', $key);
+												// // echo "<pre>";
+												// // print_r($key[0]);
+												// // echo "</pre>";
+												// echo "<pre>";
+												// print_r($value[0]['name']);
+												// echo "</pre>";
+						
+												$sqlWhereIn .= "'" . $value[0]['name'] . "',";
+						
+												
+												$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
+												$sqlWhereIn .= ") OR";
+											}
+
+											$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+											$sqlWhereIn .= ") AND ";
+											
 										}
-		
-										if(count($resultado['intents']) < 0){
-											$resp['status'] = 'success';
-											// $resp['response'] = $this->settings->info('no_answer');
-											$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente 353.';
+						
+										
+				
+										$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-4);
+				
+										// $sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
+										$sqlWhereIn .= " LIMIT 3";
+
+										$sql = "SELECT * FROM `chat_bot_response_list` " . $sqlWhereIn;
+
+										// return $sql;
+
+										$qry = $db->conn->query($sql);
+
+										if($qry->num_rows > 0){
+											
+											
+											$result = $qry->fetch_all(MYSQLI_ASSOC);
+
+
+
+											$resp['response'] = "Veja se você quis dizer algumas dessas opções abaixo:";
+
+				
+											foreach($result as $q){
+												$resp['suggestions'][] = $q['question'];
+											}
+										} else {
+
+											if(count($resultado['intents']) > 0){
+												$resp['status'] = 'success';
+												// $resp['response'] = $this->settings->info('no_answer');
+												$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
+											}
+
+											if(count($resultado['intents']) < 0){
+												$resp['status'] = 'success';
+												// $resp['response'] = $this->settings->info('no_answer');
+												$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente.';
+											}
+
+											$this->saveQuestionNotFound($kw, $cad, $cod_usu);
 										}
 		
 		

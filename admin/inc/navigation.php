@@ -55,6 +55,22 @@
                         </p>
                       </a>
                     </li>
+                    <li class="nav-item dropdown">
+                      <a href="?page=asknotfound" class="nav-link nav-asknotfound">
+                        <i class="nav-icon far fa-circle"></i>
+                        <p>
+                          Perguntas não encontradas
+                        </p>
+                      </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a href="?page=history" class="nav-link nav-history">
+                        <i class="nav-icon far fa-circle"></i>
+                        <p>
+                          Histórico dos clientes
+                        </p>
+                      </a>
+                    </li>
                     <?php if($_settings->userdata('type') == 1): ?>
                     <li class="nav-header">Maintenance</li>
                     <li class="nav-item dropdown">
