@@ -219,6 +219,8 @@
 
 			// testar se está vindo o json (insomnia)
 			// return $resultado;
+
+			
 			
 				
 			
@@ -228,84 +230,735 @@
 
 			$countTraits = 0;
 			$countEntities = 0;
+
+			$resultado['text'] = mb_convert_encoding($resultado['text'], 'ISO-8859-1', 'UTF-8');
+
+			$sql = "SELECT * FROM `chat_bot_response_list` WHERE `question` = '". trim($resultado['text']) ."'";
+			// $sql = "SELECT * FROM `chat_bot_response_list` WHERE `question` LIKE '%". $resultado['text'] ."%'";
+
+			return $sql;
+
+			$qry = $db->conn->query($sql);
+
+			if($qry){
+
+				if($qry->num_rows > 0){
+
+					$result = $qry->fetch_array();
+					$resp['response'] = $result['response'];
+
+				}else{
+
+					
+					if(is_countable($resultado['traits'])) {
+						$countTraits = count($resultado['traits']);
+						$countEntities = count($resultado['entities']);
+					
 		
-			if(is_countable($resultado['traits'])) {
-				$countTraits = count($resultado['traits']);
-				$countEntities = count($resultado['entities']);
-			
-
-				if(count($resultado['traits']) > 0){
-
-					$traitMaior = $resultado['traits'][array_key_first($resultado['traits'])][0]['value'];
-					$confidenceComparacao = $resultado['traits'][array_key_first($resultado['traits'])][0]['confidence'];
-
-					// $resultado['traits'][array_key_first($resultado['traits'])][$i]['confidence'];
-					
-
-					
-						if(count($resultado['traits']) > 1){
-
-							foreach($resultado['traits'] as $key => $value){
-								
-
-								if($resultado['traits'][$key][0]['confidence'] > $confidenceComparacao){
-									$traitMaior = $resultado['traits'][$key][0]['value'];
-									$confidenceComparacao = $resultado['traits'][$key][0]['confidence'];
-								}
-							}
-					
-						}
-
-						// $arrayTeste['traitMaior'] = $traitMaior;
-						// $arrayTeste['confidenceComparacao'] = $confidenceComparacao;
-
-						// return $arrayTeste;
-
-
-
-
-						if($confidenceComparacao < 0.8){
-							// echo "Confiança muito baixa";
-							if(count($resultado['entities']) > 0 && count($resultado['intents']) > 0){
+						if(count($resultado['traits']) > 0){
+		
+							$traitMaior = $resultado['traits'][array_key_first($resultado['traits'])][0]['value'];
+							$confidenceComparacao = $resultado['traits'][array_key_first($resultado['traits'])][0]['confidence'];
+		
+							// $resultado['traits'][array_key_first($resultado['traits'])][$i]['confidence'];
 							
-								$sqlWhereIn = " WHERE ";
-
-								foreach($resultado['entities'] as $key => $value){
-
-								$sqlWhereIn .= " ( ";	
 		
-								for ($i=1; $i <= 6; $i++) { 
+							
+								if(count($resultado['traits']) > 1){
 		
-									$sqlWhereIn .= " entity".$i." IN(";
-		
-									
-										// // $key = explode(':', $key);
-										// // echo "<pre>";
-										// // print_r($key[0]);
-										// // echo "</pre>";
-										// echo "<pre>";
-										// print_r($value[0]['name']);
-										// echo "</pre>";
-				
-										$sqlWhereIn .= "'" . $value[0]['name'] . "',";
-				
+									foreach($resultado['traits'] as $key => $value){
 										
-										$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
-										$sqlWhereIn .= ") OR";
+		
+										if($resultado['traits'][$key][0]['confidence'] > $confidenceComparacao){
+											$traitMaior = $resultado['traits'][$key][0]['value'];
+											$confidenceComparacao = $resultado['traits'][$key][0]['confidence'];
+										}
 									}
-
-									$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
-									$sqlWhereIn .= ") AND ";
+							
+								}
+		
+								// $arrayTeste['traitMaior'] = $traitMaior;
+								// $arrayTeste['confidenceComparacao'] = $confidenceComparacao;
+		
+								// return $arrayTeste;
+		
+		
+		
+		
+								if($confidenceComparacao < 0.8){
+		
+									if(count($resultado['traits']) == 1){
+										$sql = "SELECT * FROM `chat_bot_response_list` WHERE `trait` = '". $traitMaior ."'";
+		
+										$qry = $db->conn->query($sql);
+		
+										if($qry){
+		
+											if($qry->num_rows > 0){
+		
+												$result = $qry->fetch_array();
+												$resp['response'] = $result['response'];
+												// $resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
+		
+												// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
+												// if($sg_qry->num_rows > 0){
+												// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
+												// }else{
+												// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
+												// }
+												// $resp['suggestions'] = $suggestions;
+		
+		
+												if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+													$client = $_SERVER['HTTP_CLIENT_IP'];
+												} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+													$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
+												} else {
+													$client = $_SERVER['REMOTE_ADDR'];
+												}
+												$db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
+											}else{
+		
+												if(count($resultado['entities']) > 0 && count($resultado['intents']) > 0){
+										
+													$sqlWhereIn = " WHERE ";
+						
+													foreach($resultado['entities'] as $key => $value){
+						
+													$sqlWhereIn .= " ( ";	
+							
+													for ($i=1; $i <= 6; $i++) { 
+							
+														$sqlWhereIn .= " entity".$i." IN(";
+							
+														
+															// // $key = explode(':', $key);
+															// // echo "<pre>";
+															// // print_r($key[0]);
+															// // echo "</pre>";
+															// echo "<pre>";
+															// print_r($value[0]['name']);
+															// echo "</pre>";
 									
+															$sqlWhereIn .= "'" . $value[0]['name'] . "',";
+									
+															
+															$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
+															$sqlWhereIn .= ") OR";
+														}
+						
+														$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+														$sqlWhereIn .= ") AND ";
+														
+													}
+									
+													
+							
+													// $sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+							
+													$sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
+													$sqlWhereIn .= "LIMIT 1";
+												
+													// echo "<pre>";
+													// print_r($sqlWhereIn);
+													// echo "</pre>";
+													// return;
+							
+							
+													$sql = "SELECT * FROM `chat_bot_response_list`" . $sqlWhereIn;
+							
+													// $sql = "SELECT response FROM `chat_bot_response_list` WHERE entity1 IN('email','criar') OR entity2 IN('email','criar') OR entity3 IN('email','criar') OR entity4 IN('email','criar') OR entity5 IN('email','criar') OR entity6 IN('email','criar') LIMIT 1";
+							
+													// return $sql;
+										
+													$qry = $db->conn->query($sql);
+							
+													if($qry){
+							
+														if($qry->num_rows > 0){
+							
+															$result = $qry->fetch_array();
+															$resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
+															// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
+															// if($sg_qry->num_rows > 0){
+															// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
+															// }else{
+															// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
+															// }
+															// $resp['suggestions'] = mb_convert_encoding($suggestions, 'UTF-8', 'ISO-8859-1');
+															if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+																$client = $_SERVER['HTTP_CLIENT_IP'];
+															} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+																$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
+															} else {
+																$client = $_SERVER['REMOTE_ADDR'];
+															}
+															$db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
+														}else{
+							
+															if(count($resultado['intents']) > 0){
+																$resp['status'] = 'success';
+																// $resp['response'] = $this->settings->info('no_answer');
+																$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
+																$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+															}
+							
+															if(count($resultado['intents']) < 0){
+																$resp['status'] = 'success';
+																// $resp['response'] = $this->settings->info('no_answer');
+																$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente. ';
+																$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+															}
+							
+							
+							
+														}
+							
+													}else{
+														$resp['status'] = "failed";
+														$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
+														$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+														$resp['msg'] = $db->conn->error;
+													}
+							
+							
+							
+												}
+		
+												if(count($resultado['intents']) == 0 && count($resultado['entities']) > 0 ){
+													$resp['status'] = 'success';
+													// $resp['response'] = $this->settings->info('no_answer');
+													$resp['response'] = '<p>Você poderia reformular a pergunta por favor?</p>';
+													$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+												}
+		
+												if(count($resultado['intents']) > 0 && count($resultado['entities']) == 0 ){
+													$resp['status'] = 'success';
+													// $resp['response'] = $this->settings->info('no_answer');
+													$resp['response'] = '<p>Você poderia reformular a pergunta por favor?</p>';
+													$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+												}
+		
+		
+											}
+		
+										}else{
+											$resp['status'] = "failed";
+											$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
+											$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+											$resp['msg'] = $db->conn->error;
+										}
+									}
+		
+									if(count($resultado['traits']) >= 1){
+		
+										// echo "Confiança muito baixa";
+										if(count($resultado['entities']) > 0 && count($resultado['intents']) > 0){
+										
+											$sqlWhereIn = " WHERE ";
+		
+											foreach($resultado['entities'] as $key => $value){
+		
+											$sqlWhereIn .= " ( ";	
+					
+											for ($i=1; $i <= 6; $i++) { 
+					
+												$sqlWhereIn .= " entity".$i." IN(";
+					
+												
+													// // $key = explode(':', $key);
+													// // echo "<pre>";
+													// // print_r($key[0]);
+													// // echo "</pre>";
+													// echo "<pre>";
+													// print_r($value[0]['name']);
+													// echo "</pre>";
+							
+													$sqlWhereIn .= "'" . $value[0]['name'] . "',";
+							
+													
+													$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
+													$sqlWhereIn .= ") OR";
+												}
+		
+												$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+												$sqlWhereIn .= ") AND ";
+												
+											
+											}
+							
+											
+					
+											// $sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+					
+											$sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
+											$sqlWhereIn .= "LIMIT 1";
+										
+											// echo "<pre>";
+											// print_r($sqlWhereIn);
+											// echo "</pre>";
+											// return;
+					
+					
+											$sql = "SELECT * FROM `chat_bot_response_list`" . $sqlWhereIn;
+					
+											// $sql = "SELECT response FROM `chat_bot_response_list` WHERE entity1 IN('email','criar') OR entity2 IN('email','criar') OR entity3 IN('email','criar') OR entity4 IN('email','criar') OR entity5 IN('email','criar') OR entity6 IN('email','criar') LIMIT 1";
+					
+											// return $sql;
+								
+											$qry = $db->conn->query($sql);
+					
+											if($qry){
+					
+												if($qry->num_rows > 0){
+					
+													$result = $qry->fetch_array();
+													$resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
+													$sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
+													// if($sg_qry->num_rows > 0){
+													// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
+													// }else{
+													// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
+													// }
+													// $resp['suggestions'] = mb_convert_encoding($suggestions, 'UTF-8', 'ISO-8859-1');
+													if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+														$client = $_SERVER['HTTP_CLIENT_IP'];
+													} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+														$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
+													} else {
+														$client = $_SERVER['REMOTE_ADDR'];
+													}
+													$db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
+												}else{
+													$sqlWhereIn = " WHERE ";
+		
+													foreach($resultado['entities'] as $key => $value){
+		
+													$sqlWhereIn .= " ( ";	
+							
+													for ($i=1; $i <= 6; $i++) { 
+							
+														$sqlWhereIn .= " entity".$i." IN(";
+							
+														
+															// // $key = explode(':', $key);
+															// // echo "<pre>";
+															// // print_r($key[0]);
+															// // echo "</pre>";
+															// echo "<pre>";
+															// print_r($value[0]['name']);
+															// echo "</pre>";
+									
+															$sqlWhereIn .= "'" . $value[0]['name'] . "',";
+									
+															
+															$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
+															$sqlWhereIn .= ") OR";
+														}
+		
+														$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+														$sqlWhereIn .= ") AND ";
+														
+													}
+									
+													
+							
+													$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-4);
+							
+													// $sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
+													$sqlWhereIn .= " LIMIT 3";
+		
+													$sql = "SELECT * FROM `chat_bot_response_list` " . $sqlWhereIn;
+		
+													// return $sql;
+		
+													$qry = $db->conn->query($sql);
+		
+													if($qry->num_rows > 0){
+														
+														
+														$result = $qry->fetch_all(MYSQLI_ASSOC);
+		
+		
+		
+														$resp['response'] = "Veja se você quis dizer algumas dessas opções abaixo:";
+		
+							
+														foreach($result as $q){
+															$resp['suggestions'][] = $q['question'];
+														}
+													} else {
+		
+														if(count($resultado['intents']) > 0){
+															$resp['status'] = 'success';
+															// $resp['response'] = $this->settings->info('no_answer');
+															$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
+														}
+		
+														if(count($resultado['intents']) < 0){
+															$resp['status'] = 'success';
+															// $resp['response'] = $this->settings->info('no_answer');
+															$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente.';
+														}
+		
+														$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+													}
+					
+					
+					
+												}
+					
+											}else{
+												$resp['status'] = "failed";
+												$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
+												$resp['msg'] = $db->conn->error;
+											}
+					
+					
+					
+										}
+									}
+		
+								}
+		
+								if($confidenceComparacao >= 0.8){
+		
+										// $sql = "SELECT * FROM `chat_bot_response_list` WHERE `traits` = '".$resultado['entities'][array_key_first($resultado['entities'])][0]['name']."'";
+										// $sql = "SELECT * FROM `chat_bot_response_list` where id in (SELECT response_id FROM `chat_bot_keyword_list` where `keyword` = '{$kw}')";
+					
+									$sql = "SELECT * FROM `chat_bot_response_list` WHERE `trait` = '". $traitMaior ."'";
+		
+									$qry = $db->conn->query($sql);
+		
+									if($qry){
+		
+										if($qry->num_rows > 0){
+		
+											$result = $qry->fetch_array();
+											$resp['response'] = $result['response'];
+											// $resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
+		
+											// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
+											// if($sg_qry->num_rows > 0){
+											// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
+											// }else{
+											// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
+											// }
+											// $resp['suggestions'] = $suggestions;
+		
+		
+											if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+												$client = $_SERVER['HTTP_CLIENT_IP'];
+											} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+												$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
+											} else {
+												$client = $_SERVER['REMOTE_ADDR'];
+											}
+											$db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
+										}else{
+		
+											if(count($resultado['entities']) > 0 && count($resultado['intents']) > 0){
+									
+												$sqlWhereIn = " WHERE ";
+					
+												foreach($resultado['entities'] as $key => $value){
+					
+												$sqlWhereIn .= " ( ";	
+						
+												for ($i=1; $i <= 6; $i++) { 
+						
+													$sqlWhereIn .= " entity".$i." IN(";
+						
+													
+														// // $key = explode(':', $key);
+														// // echo "<pre>";
+														// // print_r($key[0]);
+														// // echo "</pre>";
+														// echo "<pre>";
+														// print_r($value[0]['name']);
+														// echo "</pre>";
+								
+														$sqlWhereIn .= "'" . $value[0]['name'] . "',";
+								
+														
+														$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
+														$sqlWhereIn .= ") OR";
+													}
+					
+													$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+													$sqlWhereIn .= ") AND ";
+													
+												}
+								
+												
+						
+												// $sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+						
+												$sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
+												$sqlWhereIn .= "LIMIT 1";
+											
+												// echo "<pre>";
+												// print_r($sqlWhereIn);
+												// echo "</pre>";
+												// return;
+						
+						
+												$sql = "SELECT * FROM `chat_bot_response_list`" . $sqlWhereIn;
+						
+												// $sql = "SELECT response FROM `chat_bot_response_list` WHERE entity1 IN('email','criar') OR entity2 IN('email','criar') OR entity3 IN('email','criar') OR entity4 IN('email','criar') OR entity5 IN('email','criar') OR entity6 IN('email','criar') LIMIT 1";
+						
+												// return $sql;
+									
+												$qry = $db->conn->query($sql);
+						
+												if($qry){
+						
+													if($qry->num_rows > 0){
+						
+														$result = $qry->fetch_array();
+														$resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
+														// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
+														// if($sg_qry->num_rows > 0){
+														// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
+														// }else{
+														// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
+														// }
+														// $resp['suggestions'] = mb_convert_encoding($suggestions, 'UTF-8', 'ISO-8859-1');
+														if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+															$client = $_SERVER['HTTP_CLIENT_IP'];
+														} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+															$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
+														} else {
+															$client = $_SERVER['REMOTE_ADDR'];
+														}
+														$db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
+													}else{
+						
+														if(count($resultado['intents']) > 0){
+															$resp['status'] = 'success';
+															// $resp['response'] = $this->settings->info('no_answer');
+															$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
+															$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+														}
+						
+														if(count($resultado['intents']) < 0){
+															$resp['status'] = 'success';
+															// $resp['response'] = $this->settings->info('no_answer');
+															$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente. ';
+															$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+														}
+						
+						
+						
+													}
+						
+												}else{
+													$resp['status'] = "failed";
+													$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
+													$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+													$resp['msg'] = $db->conn->error;
+												}
+						
+						
+						
+											}
+		
+											if(count($resultado['intents']) == 0 && count($resultado['entities']) > 0 ){
+												$resp['status'] = 'success';
+												// $resp['response'] = $this->settings->info('no_answer');
+												$resp['response'] = '<p>Você poderia reformular a pergunta por favor?</p>';
+												$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+											}
+		
+											if(count($resultado['intents']) > 0 && count($resultado['entities']) == 0 ){
+												$resp['status'] = 'success';
+												// $resp['response'] = $this->settings->info('no_answer');
+												$resp['response'] = '<p>Você poderia reformular a pergunta por favor?</p>';
+												$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+											}
+		
+		
+										}
+		
+									}else{
+										$resp['status'] = "failed";
+										$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
+										$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+										$resp['msg'] = $db->conn->error;
+									}
+		
 								
 								}
-				
+								// echo "<pre>";
+								// print_r($resultado['traits'][array_key_first($resultado['traits'])][0]['value']);
+								// print_r($resultado['traits'][array_key_first($resultado['traits'])][0]['confidence']);
+								// echo "</pre>";
+								
+								
+							
+						}
+		
+		
+						if(count($resultado['traits']) == 0){
+							if(count($resultado['entities']) > 0 && count($resultado['intents']) > 0){
+								
+								$sqlWhereIn = " WHERE ";
+		
+									foreach($resultado['entities'] as $key => $value){
+		
+									$sqlWhereIn .= " ( ";	
+			
+									for ($i=1; $i <= 6; $i++) { 
+			
+										$sqlWhereIn .= " entity".$i." IN(";
+			
+										
+											// // $key = explode(':', $key);
+											// // echo "<pre>";
+											// // print_r($key[0]);
+											// // echo "</pre>";
+											// echo "<pre>";
+											// print_r($value[0]['name']);
+											// echo "</pre>";
+					
+											$sqlWhereIn .= "'" . $value[0]['name'] . "',";
+					
+											
+											$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
+											$sqlWhereIn .= ") OR";
+										}
+		
+										$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+										$sqlWhereIn .= ") AND ";
+										
+									}
+					
+									
+			
+									// $sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+			
+									$sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
+									$sqlWhereIn .= "LIMIT 3";
+							
+								// echo "<pre>";
+								// print_r($sqlWhereIn);
+								// echo "</pre>";
+								// return;
+		
+		
+								$sql = "SELECT * FROM `chat_bot_response_list`" . $sqlWhereIn;
+		
+								// $sql = "SELECT response FROM `chat_bot_response_list` WHERE entity1 IN('email','criar') OR entity2 IN('email','criar') OR entity3 IN('email','criar') OR entity4 IN('email','criar') OR entity5 IN('email','criar') OR entity6 IN('email','criar') LIMIT 1";
+		
+								// return $sql;
+					
+								$qry = $db->conn->query($sql);
+		
 								
 		
-								// $sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+								if($qry){
 		
-								$sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
-								$sqlWhereIn .= "LIMIT 1";
+									if($qry->num_rows > 0){
+		
+										$result = $qry->fetch_all(MYSQLI_ASSOC);
+		
+										// $result = $qry->fetch_array();
+		
+		
+										$resp['response'] = "Não entendi perfeitamente o que quis dizer, clique na opção que mais se encaixa na sua dúvida.";
+		
+		
+										foreach($result as $q){
+											$resp['suggestions'][] = $q['question'];
+										}
+		
+										// $resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
+										// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
+										// if($sg_qry->num_rows > 0){
+										// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
+										// }else{
+										// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
+										// }
+										// $resp['suggestions'] = mb_convert_encoding($suggestions, 'UTF-8', 'ISO-8859-1');
+		
+		
+		
+										// if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+										// 	$client = $_SERVER['HTTP_CLIENT_IP'];
+										// } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+										// 	$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
+										// } else {
+										// 	$client = $_SERVER['REMOTE_ADDR'];
+										// }
+										// $db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
+									}else{
+		
+										if(count($resultado['intents']) > 0){
+											$resp['status'] = 'success';
+											// $resp['response'] = $this->settings->info('no_answer');
+											$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
+											$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+										}
+		
+										if(count($resultado['intents']) < 0){
+											$resp['status'] = 'success';
+											// $resp['response'] = $this->settings->info('no_answer');
+											$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente.';
+											$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+										}
+		
+		
+		
+									}
+		
+								}else{
+									$resp['status'] = "failed";
+									$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
+									$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+									$resp['msg'] = $db->conn->error;
+								}
+		
+							}
+		
+							if(count($resultado['entities']) > 0 && count($resultado['intents']) == 0){
+								
+								$sqlWhereIn = " WHERE ";
+		
+									foreach($resultado['entities'] as $key => $value){
+		
+									$sqlWhereIn .= " ( ";	
+			
+									for ($i=1; $i <= 6; $i++) { 
+			
+										$sqlWhereIn .= " entity".$i." IN(";
+			
+										
+											// // $key = explode(':', $key);
+											// // echo "<pre>";
+											// // print_r($key[0]);
+											// // echo "</pre>";
+											// echo "<pre>";
+											// print_r($value[0]['name']);
+											// echo "</pre>";
+					
+											$sqlWhereIn .= "'" . $value[0]['name'] . "',";
+					
+											
+											$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
+											$sqlWhereIn .= ") OR";
+										}
+		
+										$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+										$sqlWhereIn .= ") AND ";
+										
+									}
+					
+									
+			
+									$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-4);
+			
+									// $sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
+									$sqlWhereIn .= "LIMIT 3";
 							
 								// echo "<pre>";
 								// print_r($sqlWhereIn);
@@ -325,15 +978,30 @@
 		
 									if($qry->num_rows > 0){
 		
-										$result = $qry->fetch_array();
-										$resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
-										$sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
+										// $result = $qry->fetch_array();
+										$result = $qry->fetch_all(MYSQLI_ASSOC);
+		
+		
+		
+										$resp['response'] = "Veja se você quis dizer algumas dessas opções abaixo:";
+		
+										// $suggestions = array_column($qry->fetch_all(MYSQLI_ASSOC), 'question');
+		
+										// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
 										// if($sg_qry->num_rows > 0){
 										// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
 										// }else{
 										// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
 										// }
+										foreach($result as $q){
+											$resp['suggestions'][] = $q['question'];
+										}
+										// $resp['suggestions'] = $suggestions;
+		
+										// return $resp;
+		
 										// $resp['suggestions'] = mb_convert_encoding($suggestions, 'UTF-8', 'ISO-8859-1');
+		
 										if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 											$client = $_SERVER['HTTP_CLIENT_IP'];
 										} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -341,590 +1009,168 @@
 										} else {
 											$client = $_SERVER['REMOTE_ADDR'];
 										}
-										$db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
+										// $db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
 									}else{
-	
-										$sqlWhereIn = " WHERE ";
-
-										foreach($resultado['entities'] as $key => $value){
-
-										$sqlWhereIn .= " ( ";	
-				
-										for ($i=1; $i <= 6; $i++) { 
-				
-											$sqlWhereIn .= " entity".$i." IN(";
-				
-											
-												// // $key = explode(':', $key);
-												// // echo "<pre>";
-												// // print_r($key[0]);
-												// // echo "</pre>";
-												// echo "<pre>";
-												// print_r($value[0]['name']);
-												// echo "</pre>";
-						
-												$sqlWhereIn .= "'" . $value[0]['name'] . "',";
-						
+		
+		
+											$sqlWhereIn = " WHERE ";
+		
+											foreach($resultado['entities'] as $key => $value){
+		
+											$sqlWhereIn .= " ( ";	
+					
+											for ($i=1; $i <= 6; $i++) { 
+					
+												$sqlWhereIn .= " entity".$i." IN(";
+					
 												
-												$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
-												$sqlWhereIn .= ") OR";
-											}
-
-											$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
-											$sqlWhereIn .= ") AND ";
-											
-										}
-						
-										
-				
-										$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-4);
-				
-										// $sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
-										$sqlWhereIn .= " LIMIT 3";
-
-										$sql = "SELECT * FROM `chat_bot_response_list` " . $sqlWhereIn;
-
-										// return $sql;
-
-										$qry = $db->conn->query($sql);
-
-										if($qry->num_rows > 0){
-											
-											
-											$result = $qry->fetch_all(MYSQLI_ASSOC);
-
-
-
-											$resp['response'] = "Veja se você quis dizer algumas dessas opções abaixo:";
-
-				
-											foreach($result as $q){
-												$resp['suggestions'][] = $q['question'];
-											}
-										} else {
-
-											if(count($resultado['intents']) > 0){
-												$resp['status'] = 'success';
-												// $resp['response'] = $this->settings->info('no_answer');
-												$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
-											}
-
-											if(count($resultado['intents']) < 0){
-												$resp['status'] = 'success';
-												// $resp['response'] = $this->settings->info('no_answer');
-												$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente.';
-											}
-
-											$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-										}
-										
-
-		
-										
-		
-		
-		
-									}
-		
-								}else{
-									$resp['status'] = "failed";
-									$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
-									$resp['msg'] = $db->conn->error;
-								}
-		
-		
-		
-							}
-
-						}
-
-						if($confidenceComparacao >= 0.8){
-
-								// $sql = "SELECT * FROM `chat_bot_response_list` WHERE `traits` = '".$resultado['entities'][array_key_first($resultado['entities'])][0]['name']."'";
-								// $sql = "SELECT * FROM `chat_bot_response_list` where id in (SELECT response_id FROM `chat_bot_keyword_list` where `keyword` = '{$kw}')";
-			
-							$sql = "SELECT * FROM `chat_bot_response_list` WHERE `trait` = '". $traitMaior ."'";
-
-							$qry = $db->conn->query($sql);
-
-							if($qry){
-
-								if($qry->num_rows > 0){
-
-									$result = $qry->fetch_array();
-									$resp['response'] = $result['response'];
-									// $resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
-
-									// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
-									// if($sg_qry->num_rows > 0){
-									// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
-									// }else{
-									// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
-									// }
-									// $resp['suggestions'] = $suggestions;
-
-
-									if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-										$client = $_SERVER['HTTP_CLIENT_IP'];
-									} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-										$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
-									} else {
-										$client = $_SERVER['REMOTE_ADDR'];
-									}
-									$db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
-								}else{
-
-									if(count($resultado['entities']) > 0 && count($resultado['intents']) > 0){
+													// // $key = explode(':', $key);
+													// // echo "<pre>";
+													// // print_r($key[0]);
+													// // echo "</pre>";
+													// echo "<pre>";
+													// print_r($value[0]['name']);
+													// echo "</pre>";
 							
-										$sqlWhereIn = " WHERE ";
-			
-										foreach($resultado['entities'] as $key => $value){
-			
-										$sqlWhereIn .= " ( ";	
-				
-										for ($i=1; $i <= 6; $i++) { 
-				
-											$sqlWhereIn .= " entity".$i." IN(";
-				
-											
-												// // $key = explode(':', $key);
-												// // echo "<pre>";
-												// // print_r($key[0]);
-												// // echo "</pre>";
-												// echo "<pre>";
-												// print_r($value[0]['name']);
-												// echo "</pre>";
-						
-												$sqlWhereIn .= "'" . $value[0]['name'] . "',";
-						
+													$sqlWhereIn .= "'" . $value[0]['name'] . "',";
+							
+													
+													$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
+													$sqlWhereIn .= ") OR";
+												}
+		
+												$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
+												$sqlWhereIn .= ") AND ";
 												
-												$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
-												$sqlWhereIn .= ") OR";
 											}
-			
-											$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
-											$sqlWhereIn .= ") AND ";
-											
-										}
-						
-										
-				
-										// $sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
-				
-										$sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
-										$sqlWhereIn .= "LIMIT 1";
-									
-										// echo "<pre>";
-										// print_r($sqlWhereIn);
-										// echo "</pre>";
-										// return;
-				
-				
-										$sql = "SELECT * FROM `chat_bot_response_list`" . $sqlWhereIn;
-				
-										// $sql = "SELECT response FROM `chat_bot_response_list` WHERE entity1 IN('email','criar') OR entity2 IN('email','criar') OR entity3 IN('email','criar') OR entity4 IN('email','criar') OR entity5 IN('email','criar') OR entity6 IN('email','criar') LIMIT 1";
-				
-										// return $sql;
 							
-										$qry = $db->conn->query($sql);
-				
-										if($qry){
-				
+											
+					
+											$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-4);
+					
+											// $sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
+											$sqlWhereIn .= " LIMIT 3";
+		
+											$sql = "SELECT * FROM `chat_bot_response_list` " . $sqlWhereIn;
+		
+											// return $sql;
+		
+											$qry = $db->conn->query($sql);
+		
 											if($qry->num_rows > 0){
-				
-												$result = $qry->fetch_array();
-												$resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
+												
+												$result = $qry->fetch_all(MYSQLI_ASSOC);
+		
+		
+		
+												$resp['response'] = "Veja se você quis dizer algumas dessas opções abaixo:";
+		
+												// $suggestions = array_column($qry->fetch_all(MYSQLI_ASSOC), 'question');
+		
 												// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
 												// if($sg_qry->num_rows > 0){
 												// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
 												// }else{
 												// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
 												// }
-												// $resp['suggestions'] = mb_convert_encoding($suggestions, 'UTF-8', 'ISO-8859-1');
-												if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-													$client = $_SERVER['HTTP_CLIENT_IP'];
-												} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-													$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
-												} else {
-													$client = $_SERVER['REMOTE_ADDR'];
+												foreach($result as $q){
+													$resp['suggestions'][] = $q['question'];
 												}
-												$db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
-											}else{
-				
-												if(count($resultado['intents']) > 0){
-													$resp['status'] = 'success';
-													// $resp['response'] = $this->settings->info('no_answer');
-													$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
-													$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-												}
-				
-												if(count($resultado['intents']) < 0){
-													$resp['status'] = 'success';
-													// $resp['response'] = $this->settings->info('no_answer');
-													$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente. ';
-													$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-												}
-				
-				
-				
+											} else {
+		
+												$resp['status'] = 'success';
+												// $resp['response'] = $this->settings->info('no_answer');
+												$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente.';
+												$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+		
 											}
-				
-										}else{
-											$resp['status'] = "failed";
-											$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
-											$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-											$resp['msg'] = $db->conn->error;
-										}
-				
-				
-				
+		
+											
 									}
-
-									if(count($resultado['intents']) == 0 && count($resultado['entities']) > 0 ){
-										$resp['status'] = 'success';
-										// $resp['response'] = $this->settings->info('no_answer');
-										$resp['response'] = '<p>Você poderia reformular a pergunta por favor?</p>';
-										$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-									}
-
-									if(count($resultado['intents']) > 0 && count($resultado['entities']) == 0 ){
-										$resp['status'] = 'success';
-										// $resp['response'] = $this->settings->info('no_answer');
-										$resp['response'] = '<p>Você poderia reformular a pergunta por favor?</p>';
-										$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-									}
-
-
+		
+								}else{
+									$resp['status'] = "failed";
+									$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
+									$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+									$resp['msg'] = $db->conn->error;
 								}
-
-							}else{
-								$resp['status'] = "failed";
-								$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
-								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-								$resp['msg'] = $db->conn->error;
+		
+		
+		
 							}
-
-						
+		
+							if(count($resultado['entities']) == 0 && count($resultado['intents']) == 0){
+								
+							}
+		
+							if(count($resultado['entities']) == 0 && count($resultado['intents']) > 0){
+								$resp['status'] = 'success';
+								// $resp['response'] = $this->settings->info('no_answer');
+								$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
+								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+							}
 						}
-						// echo "<pre>";
-						// print_r($resultado['traits'][array_key_first($resultado['traits'])][0]['value']);
-						// print_r($resultado['traits'][array_key_first($resultado['traits'])][0]['confidence']);
-						// echo "</pre>";
-						
-						
+		
 					
-					}
+					} else if(is_countable($resultado['entities']) && count($resultado['traits']) == 0){
 
+						$sql = "SELECT * FROM `chat_bot_response_list` WHERE `question` LIKE '%". trim($resultado['text']) ."%' LIMIT 4";
 
-					if(count($resultado['traits']) == 0){
-						if(count($resultado['entities']) > 0 && count($resultado['intents']) > 0){
+						$qry = $db->conn->query($sql);
+
+						if($qry){
+
+							if($qry->num_rows > 0){
+
+								$result = $qry->fetch_all(MYSQLI_ASSOC);
 							
-							$sqlWhereIn = " WHERE ";
-
-								foreach($resultado['entities'] as $key => $value){
-
-								$sqlWhereIn .= " ( ";	
-		
-								for ($i=1; $i <= 6; $i++) { 
-		
-									$sqlWhereIn .= " entity".$i." IN(";
-		
-									
-										// // $key = explode(':', $key);
-										// // echo "<pre>";
-										// // print_r($key[0]);
-										// // echo "</pre>";
-										// echo "<pre>";
-										// print_r($value[0]['name']);
-										// echo "</pre>";
+								$resp['response'] = "Não entendi perfeitamente o que quis dizer, clique na opção que mais se encaixa na sua dúvida.";
 				
-										$sqlWhereIn .= "'" . $value[0]['name'] . "',";
-				
-										
-										$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
-										$sqlWhereIn .= ") OR";
-									}
-
-									$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
-									$sqlWhereIn .= ") AND ";
-									
-								}
-				
-								
-		
-								// $sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
-		
-								$sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
-								$sqlWhereIn .= "LIMIT 3";
-						
-							// echo "<pre>";
-							// print_r($sqlWhereIn);
-							// echo "</pre>";
-							// return;
-
-
-							$sql = "SELECT * FROM `chat_bot_response_list`" . $sqlWhereIn;
-
-							// $sql = "SELECT response FROM `chat_bot_response_list` WHERE entity1 IN('email','criar') OR entity2 IN('email','criar') OR entity3 IN('email','criar') OR entity4 IN('email','criar') OR entity5 IN('email','criar') OR entity6 IN('email','criar') LIMIT 1";
-
-							// return $sql;
-				
-							$qry = $db->conn->query($sql);
-
-							
-
-							if($qry){
-
-								if($qry->num_rows > 0){
-
-									$result = $qry->fetch_all(MYSQLI_ASSOC);
-
-									// $result = $qry->fetch_array();
-
-
-									$resp['response'] = "Não entendi perfeitamente o que quis dizer, clique na opção que mais se encaixa na sua dúvida.";
-
-
-									foreach($result as $q){
-										$resp['suggestions'][] = $q['question'];
-									}
-
-									// $resp['response'] = mb_convert_encoding($result['response'], 'UTF-8', 'ISO-8859-1');
-									// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
-									// if($sg_qry->num_rows > 0){
-									// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
-									// }else{
-									// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
-									// }
-									// $resp['suggestions'] = mb_convert_encoding($suggestions, 'UTF-8', 'ISO-8859-1');
-
-									if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-										$client = $_SERVER['HTTP_CLIENT_IP'];
-									} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-										$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
-									} else {
-										$client = $_SERVER['REMOTE_ADDR'];
-									}
-									// $db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
-								}else{
-
-									if(count($resultado['intents']) > 0){
-										$resp['status'] = 'success';
-										// $resp['response'] = $this->settings->info('no_answer');
-										$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
-										$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-									}
-
-									if(count($resultado['intents']) < 0){
-										$resp['status'] = 'success';
-										// $resp['response'] = $this->settings->info('no_answer');
-										$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente.';
-										$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-									}
-
-
-
+								foreach($result as $q){
+									$resp['suggestions'][] = $q['question'];
 								}
 
-							}else{
-								$resp['status'] = "failed";
-								$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
 								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-								$resp['msg'] = $db->conn->error;
-							}
 
-						}
-
-						if(count($resultado['entities']) > 0 && count($resultado['intents']) == 0){
-							
-							$sqlWhereIn = " WHERE ";
-
-								foreach($resultado['entities'] as $key => $value){
-
-								$sqlWhereIn .= " ( ";	
-		
-								for ($i=1; $i <= 6; $i++) { 
-		
-									$sqlWhereIn .= " entity".$i." IN(";
-		
-									
-										// // $key = explode(':', $key);
-										// // echo "<pre>";
-										// // print_r($key[0]);
-										// // echo "</pre>";
-										// echo "<pre>";
-										// print_r($value[0]['name']);
-										// echo "</pre>";
-				
-										$sqlWhereIn .= "'" . $value[0]['name'] . "',";
-				
-										
-										$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
-										$sqlWhereIn .= ") OR";
-									}
-
-									$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
-									$sqlWhereIn .= ") AND ";
-									
-								}
-				
-								
-		
-								$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-4);
-		
-								// $sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
-								$sqlWhereIn .= "LIMIT 3";
-						
-							// echo "<pre>";
-							// print_r($sqlWhereIn);
-							// echo "</pre>";
-							// return;
-
-
-							$sql = "SELECT * FROM `chat_bot_response_list`" . $sqlWhereIn;
-
-							// $sql = "SELECT response FROM `chat_bot_response_list` WHERE entity1 IN('email','criar') OR entity2 IN('email','criar') OR entity3 IN('email','criar') OR entity4 IN('email','criar') OR entity5 IN('email','criar') OR entity6 IN('email','criar') LIMIT 1";
-
-							// return $sql;
-				
-							$qry = $db->conn->query($sql);
-
-							if($qry){
-
-								if($qry->num_rows > 0){
-
-									// $result = $qry->fetch_array();
-									$result = $qry->fetch_all(MYSQLI_ASSOC);
-
-
-
-									$resp['response'] = "Veja se você quis dizer algumas dessas opções abaixo:";
-
-									// $suggestions = array_column($qry->fetch_all(MYSQLI_ASSOC), 'question');
-
-									// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
-									// if($sg_qry->num_rows > 0){
-									// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
-									// }else{
-									// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
-									// }
-									foreach($result as $q){
-										$resp['suggestions'][] = $q['question'];
-									}
-									// $resp['suggestions'] = $suggestions;
-
-									// return $resp;
-
-									// $resp['suggestions'] = mb_convert_encoding($suggestions, 'UTF-8', 'ISO-8859-1');
-
-									if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-										$client = $_SERVER['HTTP_CLIENT_IP'];
-									} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-										$client = $_SERVER['HTTP_X_FORWARDED_FOR'];
-									} else {
-										$client = $_SERVER['REMOTE_ADDR'];
-									}
-									// $db->conn->query("INSERT INTO `chat_bot_keyword_fetched` set `response_id` = '{$result['id']}', `client` = '{$client}'");
-								}else{
-
-
-										$sqlWhereIn = " WHERE ";
-
-										foreach($resultado['entities'] as $key => $value){
-
-										$sqlWhereIn .= " ( ";	
-				
-										for ($i=1; $i <= 6; $i++) { 
-				
-											$sqlWhereIn .= " entity".$i." IN(";
-				
-											
-												// // $key = explode(':', $key);
-												// // echo "<pre>";
-												// // print_r($key[0]);
-												// // echo "</pre>";
-												// echo "<pre>";
-												// print_r($value[0]['name']);
-												// echo "</pre>";
-						
-												$sqlWhereIn .= "'" . $value[0]['name'] . "',";
-						
-												
-												$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-1);
-												$sqlWhereIn .= ") OR";
-											}
-
-											$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
-											$sqlWhereIn .= ") AND ";
-											
-										}
-						
-										
-				
-										$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-4);
-				
-										// $sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
-										$sqlWhereIn .= " LIMIT 3";
-
-										$sql = "SELECT * FROM `chat_bot_response_list` " . $sqlWhereIn;
-
-										// return $sql;
-
-										$qry = $db->conn->query($sql);
-
-										if($qry->num_rows > 0){
-											
-											$result = $qry->fetch_all(MYSQLI_ASSOC);
-
-
-
-											$resp['response'] = "Veja se você quis dizer algumas dessas opções abaixo:";
-
-											// $suggestions = array_column($qry->fetch_all(MYSQLI_ASSOC), 'question');
-
-											// $sg_qry = $db->conn->query("SELECT suggestion FROM `chat_bot_suggestion_list` where response_id = '{$result['id']}'");
-											// if($sg_qry->num_rows > 0){
-											// 	$suggestions = array_column($sg_qry->fetch_all(MYSQLI_ASSOC), 'suggestion');
-											// }else{
-											// 	$suggestions = $this->settings->info('suggestion') != "" ? json_decode($this->settings->info('suggestion')) : "";
-											// }
-											foreach($result as $q){
-												$resp['suggestions'][] = $q['question'];
-											}
-										} else {
-
-											$resp['status'] = 'success';
-											// $resp['response'] = $this->settings->info('no_answer');
-											$resp['response'] = 'Não encontramos o que deseja, sugerimos falar com um atendente.';
-											$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-
-										}
-
-										
-								}
-
-							}else{
-								$resp['status'] = "failed";
-								$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
+							} else{
+								$resp['response'] = "Poderia ser mais específico em relação ào que gostaria de saber ?";
 								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-								$resp['msg'] = $db->conn->error;
 							}
-
-
-
 						}
+						
+					} else if(is_countable($resultado['intent'])){
+						$sql = "SELECT * FROM `chat_bot_response_list` WHERE `question` LIKE '%". trim($resultado['text']) ."%' LIMIT 4";
 
-						if(count($resultado['entities']) == 0 && count($resultado['intents']) == 0){
+						$qry = $db->conn->query($sql);
+
+						if($qry){
+
+							if($qry->num_rows > 0){
+
+								$result = $qry->fetch_all(MYSQLI_ASSOC);
 							
+								$resp['response'] = "Não entendi perfeitamente o que quis dizer, clique na opção que mais se encaixa na sua dúvida.";
+				
+								foreach($result as $q){
+									$resp['suggestions'][] = $q['question'];
+								}
+
+								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+
+							} else{
+								$resp['response'] = "Poderia ser mais específico em relação à sua intenção ?";
+								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+							}
 						}
 					}
 
-			} else if(is_countable($resultado['entities'])){
-				$resp['response'] = "Poderia ser mais específico em relação ào que gostaria de saber ?";
+				}
+
+			}else{
+				$resp['status'] = "failed";
+				$resp['response'] = 'Algo deu errado na conexão com nossas respostas!';
 				$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-			} else if(is_countable($resultado['intent'])){
-				$resp['response'] = "Poderia ser mais específico em relação à sua intenção ?";
-				$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+				$resp['msg'] = $db->conn->error;
 			}
 
 
