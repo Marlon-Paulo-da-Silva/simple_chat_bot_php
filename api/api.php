@@ -283,7 +283,7 @@
 		
 		
 		
-								if($confidenceComparacao < 0.89){
+								if($confidenceComparacao < 0.9){
 		
 									if(count($resultado['traits']) == 1){
 										$sql = "SELECT * FROM `chat_bot_response_list` WHERE `trait` = '". $traitMaior ."'";
@@ -619,7 +619,7 @@
 		
 								}
 		
-								if($confidenceComparacao >= 0.89){
+								if($confidenceComparacao >= 0.9){
 		
 										// $sql = "SELECT * FROM `chat_bot_response_list` WHERE `traits` = '".$resultado['entities'][array_key_first($resultado['entities'])][0]['name']."'";
 										// $sql = "SELECT * FROM `chat_bot_response_list` where id in (SELECT response_id FROM `chat_bot_keyword_list` where `keyword` = '{$kw}')";
