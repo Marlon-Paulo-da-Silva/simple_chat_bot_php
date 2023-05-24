@@ -285,7 +285,7 @@
 		
 		
 		
-								if($confidenceComparacao < 0.8){
+								if($confidenceComparacao < 0.89){
 		
 									if(count($resultado['traits']) == 1){
 										$sql = "SELECT * FROM `chat_bot_response_list` WHERE `trait` = '". $traitMaior ."'";
@@ -566,7 +566,7 @@
 													$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-4);
 							
 													// $sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
-													$sqlWhereIn .= " LIMIT 3";
+													$sqlWhereIn .= " limit 5";
 		
 													$sql = "SELECT * FROM `chat_bot_response_list` " . $sqlWhereIn;
 		
@@ -621,7 +621,7 @@
 		
 								}
 		
-								if($confidenceComparacao >= 0.8){
+								if($confidenceComparacao >= 0.89){
 		
 										// $sql = "SELECT * FROM `chat_bot_response_list` WHERE `traits` = '".$resultado['entities'][array_key_first($resultado['entities'])][0]['name']."'";
 										// $sql = "SELECT * FROM `chat_bot_response_list` where id in (SELECT response_id FROM `chat_bot_keyword_list` where `keyword` = '{$kw}')";
@@ -838,7 +838,7 @@
 									// $sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-2);
 			
 									$sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
-									$sqlWhereIn .= "LIMIT 3";
+									$sqlWhereIn .= "limit 5";
 							
 								// echo "<pre>";
 								// print_r($sqlWhereIn);
@@ -958,7 +958,7 @@
 									$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-4);
 			
 									// $sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
-									$sqlWhereIn .= "LIMIT 3";
+									$sqlWhereIn .= "limit 5";
 							
 								// echo "<pre>";
 								// print_r($sqlWhereIn);
@@ -1049,7 +1049,7 @@
 											$sqlWhereIn = substr($sqlWhereIn, 0, strlen($sqlWhereIn)-4);
 					
 											// $sqlWhereIn .= " intent IN('". $resultado['intents'][array_key_first($resultado['intents'])]['name'] ."') ";
-											$sqlWhereIn .= " LIMIT 3";
+											$sqlWhereIn .= " limit 5";
 		
 											$sql = "SELECT * FROM `chat_bot_response_list` " . $sqlWhereIn;
 		
