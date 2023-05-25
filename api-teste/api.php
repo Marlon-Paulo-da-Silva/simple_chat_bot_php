@@ -435,7 +435,7 @@
 												if(count($resultado['intents']) > 0 && count($resultado['entities']) == 0 ){
 													$resp['status'] = 'success';
 													// $resp['response'] = $this->settings->info('no_answer');
-													$resp['response'] = '<p>Você poderia reformular a pergunta por favor?</p>';
+													$resp['response'] = 'Poderia ser mais específico em relação ao que você quer ' . $resultado['intents'][array_key_first($resultado['intents'])]['name'] . '?';
 													$this->saveQuestionNotFound($kw, $cad, $cod_usu);
 												}
 		
