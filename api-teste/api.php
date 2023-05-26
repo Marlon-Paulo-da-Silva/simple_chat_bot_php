@@ -236,7 +236,7 @@
 			$sql = "SELECT * FROM `chat_bot_response_list` WHERE `question` = '". trim($resultado['text']) ."'";
 			// $sql = "SELECT * FROM `chat_bot_response_list` WHERE `question` LIKE '%". $resultado['text'] ."%'";
 
-			return $sql;
+			// return $sql;
 
 			$qry = $db->conn->query($sql);
 
@@ -1100,7 +1100,10 @@
 							}
 		
 							if(count($resultado['entities']) == 0 && count($resultado['intents']) == 0){
-								
+								$resp['status'] = 'success';
+								// $resp['response'] = $this->settings->info('no_answer');
+								$resp['response'] = 'Puxa, perdi o fio da meada, sugiro falar com um dos nosso atendentes';
+								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
 							}
 		
 							if(count($resultado['entities']) == 0 && count($resultado['intents']) > 0){
@@ -1112,57 +1115,58 @@
 						}
 		
 					
-					} else if(is_countable($resultado['entities']) && count($resultado['traits']) == 0){
+					} 
+					// else if(is_countable($resultado['entities']) && count($resultado['traits']) == 0){
 
-						$sql = "SELECT * FROM `chat_bot_response_list` WHERE `question` LIKE '%". trim($resultado['text']) ."%' LIMIT 4";
+					// 	$sql = "SELECT * FROM `chat_bot_response_list` WHERE `question` LIKE '%". trim($resultado['text']) ."%' LIMIT 4";
 
-						$qry = $db->conn->query($sql);
+					// 	$qry = $db->conn->query($sql);
 
-						if($qry){
+					// 	if($qry){
 
-							if($qry->num_rows > 0){
+					// 		if($qry->num_rows > 0){
 
-								$result = $qry->fetch_all(MYSQLI_ASSOC);
+					// 			$result = $qry->fetch_all(MYSQLI_ASSOC);
 							
-								$resp['response'] = "Não entendi perfeitamente o que quis dizer, clique na opção que mais se encaixa na sua dúvida.";
+					// 			$resp['response'] = "Não entendi perfeitamente o que quis dizer, clique na opção que mais se encaixa na sua dúvida.";
 				
-								foreach($result as $q){
-									$resp['suggestions'][] = $q['question'];
-								}
+					// 			foreach($result as $q){
+					// 				$resp['suggestions'][] = $q['question'];
+					// 			}
 
-								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+					// 			$this->saveQuestionNotFound($kw, $cad, $cod_usu);
 
-							} else{
-								$resp['response'] = "Poderia ser mais específico em relação ào que gostaria de saber ?";
-								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-							}
-						}
+					// 		} else{
+					// 			$resp['response'] = "Poderia ser mais específico em relação ào que gostaria de saber ?";
+					// 			$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+					// 		}
+					// 	}
 						
-					} else if(is_countable($resultado['intent'])){
-						$sql = "SELECT * FROM `chat_bot_response_list` WHERE `question` LIKE '%". trim($resultado['text']) ."%' LIMIT 4";
+					// } else if(is_countable($resultado['intent'])){
+					// 	$sql = "SELECT * FROM `chat_bot_response_list` WHERE `question` LIKE '%". trim($resultado['text']) ."%' LIMIT 4";
 
-						$qry = $db->conn->query($sql);
+					// 	$qry = $db->conn->query($sql);
 
-						if($qry){
+					// 	if($qry){
 
-							if($qry->num_rows > 0){
+					// 		if($qry->num_rows > 0){
 
-								$result = $qry->fetch_all(MYSQLI_ASSOC);
+					// 			$result = $qry->fetch_all(MYSQLI_ASSOC);
 							
-								$resp['response'] = "Não entendi perfeitamente o que quis dizer, clique na opção que mais se encaixa na sua dúvida.";
+					// 			$resp['response'] = "Não entendi perfeitamente o que quis dizer, clique na opção que mais se encaixa na sua dúvida.";
 				
-								foreach($result as $q){
-									$resp['suggestions'][] = $q['question'];
-								}
+					// 			foreach($result as $q){
+					// 				$resp['suggestions'][] = $q['question'];
+					// 			}
 
-								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+					// 			$this->saveQuestionNotFound($kw, $cad, $cod_usu);
 
-							} else{
-								$resp['response'] = "Poderia ser mais específico em relação à sua intenção ?";
-								$this->saveQuestionNotFound($kw, $cad, $cod_usu);
-							}
-						}
-					}
+					// 		} else{
+					// 			$resp['response'] = "Poderia ser mais específico em relação à sua intenção ?";
+					// 			$this->saveQuestionNotFound($kw, $cad, $cod_usu);
+					// 		}
+					// 	}
+					// }
 
 				}
 
